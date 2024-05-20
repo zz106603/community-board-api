@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PostVO {
 	
-	private int id;
+	private long id;
 	private String title;
 	private String content;
 	private String writer;
@@ -21,10 +21,10 @@ public class PostVO {
 	private LocalDateTime deleteDate;
 	private String deleteYn;
 	
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getTitle() {

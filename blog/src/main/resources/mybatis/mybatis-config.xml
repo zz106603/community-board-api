@@ -10,5 +10,7 @@
 		<setting name="jdbcTypeForNull" value="NULL" />
 		<!--컴파일 시 파라미터 이름 유지-->
 		<setting name="useActualParamName" value="true"/>
+		
+		<setting name="logImpl" value="STDOUT_LOGGING"/>
 	</settings>
 </configuration>

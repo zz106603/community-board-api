@@ -18,37 +18,6 @@ public class PostServiceImpl implements PostService{
 	
 	@Autowired
 	private PostMapper postMapper;
-	
-	@Override
-	public List<PostVO> selectPost() {
-		
-		try{
-			List<PostVO> res = postMapper.selectPostList();
-			return res;
-		}catch(Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		
-	}
-
-	/*
-	 * POST 등록
-	 */
-	@Override
-	public int createPost(PostVO post) {
-		
-		try {
-			post.setDeleteYn("N");
-			post.setWriteDate(LocalDateTime.now());
-			int res = postMapper.createPost(post);
-			return res;
-		}catch(Exception e) {
-			e.printStackTrace();
-			logger.info(e.getMessage());
-			return 0;
-		}
-	}
 
 	/*
 	 * 단일 포스트 조회
@@ -83,4 +52,81 @@ public class PostServiceImpl implements PostService{
 		
 	}
 
+	/*
+	 * 전체 포스트 개수 조회
+	 */
+	@Override
+	public long getPostByAllCount() {
+		
+		try {
+			long count = postMapper.findByAllCount();
+			return count;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return 0;
+		}
+	}
+
+	
+	/*
+	 * 포스트 등록
+	 */
+	@Override
+	public int createPost(PostVO post) {
+		
+		try {
+			post.setDeleteYn("N");
+			LocalDateTime now = LocalDateTime.now();
+			post.setWriteDate(now);
+			post.setUpdateDate(now);
+			int res = postMapper.createPost(post);
+			return res;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return 0;
+		}
+	}
+	
+	/*
+	 * 포스트 업데이트
+	 */
+	@Override
+	public int updatePost(PostVO post) {
+		
+		try {
+			post.setUpdateDate(LocalDateTime.now());
+			int res = postMapper.updatePost(post);
+			return res;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return 0;
+		}
+	}
+
+
+	/*
+	 * 포스팅 삭제
+	 */
+	@Override
+	public int deletePost(Long id) {
+		
+		try {
+			
+			PostVO post = new PostVO();
+			post.setId(id);
+			post.setDeleteDate(LocalDateTime.now());
+			post.setDeleteYn("Y");
+			int res = postMapper.deletePost(post);
+			return res;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return 0;
+		}
+	}
+
+	
 }

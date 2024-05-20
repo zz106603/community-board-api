@@ -3,26 +3,7 @@
 
 <mapper namespace="com.spring.blog.mapper.PostMapper">
 
-    <select id="selectPostList" resultType="com.spring.blog.vo.PostVO">
-		SELECT 
-			id, 
-		    title,
-		    content,
-		    writer,
-		    category,
-		    write_date,
-		    update_date,
-		    delete_date,
-		    delete_yn
-		FROM 
-			post
-    </select>
-    
-    <insert id="createPost" parameterType="com.spring.blog.vo.PostVO">
-		INSERT INTO post (title, content, writer, category, write_date, delete_yn)
-		VALUES (#{title}, #{content}, #{writer}, #{category}, #{writeDate}, #{deleteYn})
-	</insert>
-
+	<!--단일 포스트 조회-->
 	<select id="findById" parameterType="java.lang.Long" resultType="com.spring.blog.vo.PostVO">
 		SELECT 
 			*
@@ -30,10 +11,12 @@
 			post
 		WHERE
 			id = #{id}
+		AND
+			delete_yn = 'N'
 			
     </select>
     
-    
+    <!--전체 포스트 조회-->
     <resultMap id="postResultMap" type="PostVO">
 	    <id property="id" column="id" />
 	    <result property="title" column="title" />
@@ -50,6 +33,47 @@
 			*
 		FROM 
 			post
+		WHERE
+			delete_yn = 'N'
+		ORDER BY
+			update_date DESC
     </select>
+    
+    <!--전체 포스트 개수-->
+    <select id="findByAllCount" resultType="java.lang.Long">
+		SELECT 
+			count(*)
+		FROM 
+			post
+		WHERE
+			delete_yn = 'N'
+    </select>
+    
+    <!--포스트 등록-->
+    <insert id="createPost" parameterType="com.spring.blog.vo.PostVO">
+		INSERT INTO post (title, content, writer, category, write_date, update_date, delete_yn)
+		VALUES (#{title}, #{content}, #{writer}, #{category}, #{writeDate}, #{updateDate}, #{deleteYn})
+	</insert>
+	
+    <!-- 포스트 업데이트 -->
+	<update id="updatePost" parameterType="com.spring.blog.vo.PostVO">
+	    UPDATE post
+	    SET 
+	    	title = #{title}, 
+	    	content = #{content},
+	    	writer = #{writer},
+	    	category = #{category},
+	    	update_date = #{updateDate}
+	    WHERE id = #{id}
+	</update>
+	
+	<!-- 포스트 삭제 -->
+	<delete id="deletePost" parameterType="com.spring.blog.vo.PostVO">
+		UPDATE post
+	    SET 
+	    	delete_yn = #{deleteYn}, 
+	    	delete_date = #{deleteDate}
+	    WHERE id = #{id}
+    </delete>
 
 </mapper>

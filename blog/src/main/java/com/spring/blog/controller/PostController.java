@@ -8,19 +8,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.blog.service.PostService;
 import com.spring.blog.util.ApiResponse;
 import com.spring.blog.util.ResponseUtil;
 import com.spring.blog.vo.PostVO;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -31,12 +32,47 @@ public class PostController {
 	@Autowired
 	private PostService postService;
 	
-	@GetMapping("/test")
-    public ResponseEntity<?> selectMember(HttpServletRequest request) {
-		List<PostVO> result = postService.selectPost();
+	/*
+	 * 단일 포스팅 조회
+	 * {postId}
+	 */
+	@GetMapping("/{id}")
+	public ResponseEntity<ApiResponse<PostVO>> selectPost(@PathVariable("id") Long id){
+
+		PostVO post = postService.getPostById(id);
+		if(post != null) {
+			return ResponseUtil.buildResponse(HttpStatus.OK, "Post selected successfully", post);
+		}else {
+			return ResponseUtil.buildResponse(HttpStatus.NOT_FOUND, "Post not found with id: " + id, post);
+		}
 		
-		return ResponseEntity.ok(result);
-    }
+	}
+	
+	/*
+	 * 전체 포스팅 조회
+	 */
+	@GetMapping("/all")
+	public ResponseEntity<ApiResponse<List<PostVO>>> selectPost(){
+
+		List<PostVO> post = postService.getPostByAll();
+		if(post != null) {
+			return ResponseUtil.buildResponse(HttpStatus.OK, "Posts selected successfully", post);
+		}else {
+			return ResponseUtil.buildResponse(HttpStatus.NOT_FOUND, "Posts not found", post);
+		}
+		
+	}
+	
+	/*
+	 * 전체 포스팅 카운트
+	 */
+	@GetMapping("/all/count")
+	public ResponseEntity<ApiResponse<Long>> selectPostCount(){
+
+		long count = postService.getPostByAllCount();
+		
+		return ResponseUtil.buildResponse(HttpStatus.OK, "Posts selected successfully", count);
+	}
 	
 	/*
 	 * 포스팅 등록
@@ -59,35 +95,70 @@ public class PostController {
 		
 	}
 	
+//	/*
+//	 * 포스팅 등록
+//	 * title, content, writer, category
+//	 */
+//	@PostMapping("/test")
+//	public ResponseEntity<ApiResponse<String>> test() throws InterruptedException{
+//		
+//		for(int i=0; i<100; i++) {
+//			PostVO post = new PostVO();
+//			post.setCategory("카테고리");
+//			post.setTitle("제목 " + i);
+//			post.setContent("내용 " + i);
+//			post.setWriter("정윤환");
+//			
+//			int createdPost = postService.createPost(post);
+//			Thread.sleep(500);
+//		}
+//		
+//		return ResponseUtil.buildResponse(HttpStatus.CREATED, "Post created successfully", "성공");
+//		
+//	}
+	
 	/*
-	 * 단일 포스팅 조회
-	 * {postId}
+	 * 포스팅 수정
+	 * title, content, writer, category
 	 */
-	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<PostVO>> selectPost(@PathVariable("id") Long id){
-
-		PostVO post = postService.getPostById(id);
-		if(post != null) {
-			return ResponseUtil.buildResponse(HttpStatus.OK, "Post selected successfully", post);
-		}else {
-			return ResponseUtil.buildResponse(HttpStatus.NOT_FOUND, "Post not found with id: " + id, post);
+	@PutMapping("/update")
+	public ResponseEntity<ApiResponse<String>> updatePost(@RequestBody PostVO post){
+		
+		try {
+			int updatedPost = postService.updatePost(post);
+			if(updatedPost == 1) {
+				return ResponseUtil.buildResponse(HttpStatus.CREATED, "Post updated successfully", "성공");
+			}else {
+				return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "Post update failed", "실패");
+			}
+		}catch(Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "Post update failed", e.getMessage());
 		}
 		
 	}
 	
 	/*
-	 * 단일 포스팅 조회
-	 * {postId}
+	 * 포스팅 삭제
+	 * title, content, writer, category
 	 */
-	@GetMapping("/all")
-	public ResponseEntity<ApiResponse<List<PostVO>>> selectPost(){
-
-		List<PostVO> post = postService.getPostByAll();
-		if(post != null) {
-			return ResponseUtil.buildResponse(HttpStatus.OK, "Posts selected successfully", post);
-		}else {
-			return ResponseUtil.buildResponse(HttpStatus.NOT_FOUND, "Posts not found", post);
+	@DeleteMapping("/delete")
+	public ResponseEntity<ApiResponse<String>> deletePost(@RequestParam("id") Long id){
+		
+		try {
+			int deletedPost = postService.deletePost(id);
+			if(deletedPost == 1) {
+				return ResponseUtil.buildResponse(HttpStatus.CREATED, "Post deleted successfully", "성공");
+			}else {
+				return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "Post delete failed", "실패");
+			}
+		}catch(Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "Post delete failed", e.getMessage());
 		}
 		
 	}
+	
+	
+	
 }

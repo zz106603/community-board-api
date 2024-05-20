@@ -10,11 +10,17 @@ import com.spring.blog.vo.PostVO;
 @Mapper
 public interface PostMapper {
 
-	List<PostVO> selectPostList();
-
 	int createPost(PostVO post);
+	
+	int updatePost(PostVO post);
 
 	PostVO findById(@Param("id") Long id);
 
 	List<PostVO> findByAll();
+
+	int deletePost(PostVO post);
+
+	long findByAllCount();
+
+	
 }
