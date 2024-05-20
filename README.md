@@ -38,7 +38,7 @@
 | 400 | Post creation failed | 실패 |
 | 400 | Post creation failed | 에러 메시지 |
 
-![스크린샷 2024-05-20 123041.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/fe506ab6-2d0c-4278-9200-9029f295aec2/5a2e075b-6497-4413-ac6f-036b131de225/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7_2024-05-20_123041.png)
+![스크린샷 2024-05-20 123041](https://github.com/zz106603/blog_springboot/assets/45379781/f0d573c9-5423-4197-97eb-bfb0bfc961eb)
 
 ---
 
@@ -64,7 +64,7 @@
 | 400 | Post update failed | 실패 |
 | 400 | Post update failed | 에러 메시지 |
 
-![스크린샷 2024-05-20 143158.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/fe506ab6-2d0c-4278-9200-9029f295aec2/8f9e61d0-5c5a-40ec-89b4-294933db3cd2/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7_2024-05-20_143158.png)
+![스크린샷 2024-05-20 143158](https://github.com/zz106603/blog_springboot/assets/45379781/3ece5064-e425-4c99-8a43-433a1e15b248)
 
 ---
 
@@ -84,7 +84,7 @@
 | 400 | Post delete failed | 실패 |
 | 400 | Post delete failed | 에러 메시지 |
 
-![스크린샷 2024-05-20 143308.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/fe506ab6-2d0c-4278-9200-9029f295aec2/680ddbde-2dfc-4bc4-9cab-a3360b0c3b9b/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7_2024-05-20_143308.png)
+![스크린샷 2024-05-20 143308](https://github.com/zz106603/blog_springboot/assets/45379781/27edc319-7b75-4b84-9fb5-637b892f3ec4)
 
 ---
 
@@ -103,7 +103,7 @@
 | 200 | Posts selected successfully | [{}, {} .. ] |
 | 404 | Posts not found | [{}] |
 
-![스크린샷 2024-05-20 142630.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/fe506ab6-2d0c-4278-9200-9029f295aec2/bee3e322-e8c6-4be7-8886-cd3bbfdb42f6/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7_2024-05-20_142630.png)
+![스크린샷 2024-05-20 142630](https://github.com/zz106603/blog_springboot/assets/45379781/8baf1173-3889-4a1a-86a7-60210465e1b1)
 
 ---
 
@@ -121,7 +121,7 @@
 | --- | --- | --- |
 | 200 | Posts selected successfully | 카운트 개수 |
 
-![스크린샷 2024-05-20 142754.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/fe506ab6-2d0c-4278-9200-9029f295aec2/155ed718-bb17-4208-ab51-91c35ed4a7ca/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7_2024-05-20_142754.png)
+![스크린샷 2024-05-20 142754](https://github.com/zz106603/blog_springboot/assets/45379781/607d41b8-e652-4bd9-b6a7-18cb33e2922d)
 
 ---
 
@@ -140,4 +140,4 @@
 | 200 | Post selected successfully | [{}] |
 | 404 | Post not found with id:  + id | [{}] |
 
-![스크린샷 2024-05-20 142942.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/fe506ab6-2d0c-4278-9200-9029f295aec2/72b5fe61-8d1a-4577-9dab-911ee55a768c/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7_2024-05-20_142942.png)
+![스크린샷 2024-05-20 142942](https://github.com/zz106603/blog_springboot/assets/45379781/1ff0a72e-145b-4d34-8423-7a74d6fa8953)
