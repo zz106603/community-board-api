@@ -38,7 +38,7 @@
 | 400 | Post creation failed | 실패 |
 | 400 | Post creation failed | 에러 메시지 |
 
-https://prod-files-secure.s3.us-west-2.amazonaws.com/fe506ab6-2d0c-4278-9200-9029f295aec2/5a2e075b-6497-4413-ac6f-036b131de225/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7_2024-05-20_123041.png
+![스크린샷 2024-05-20 123041.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/fe506ab6-2d0c-4278-9200-9029f295aec2/5a2e075b-6497-4413-ac6f-036b131de225/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7_2024-05-20_123041.png)
 
 ---
 
