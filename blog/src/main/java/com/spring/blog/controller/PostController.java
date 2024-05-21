@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.spring.blog.dto.SearchDTO;
 import com.spring.blog.service.PostService;
 import com.spring.blog.util.ApiResponse;
+import com.spring.blog.util.PagingResponse;
 import com.spring.blog.util.ResponseUtil;
 import com.spring.blog.vo.PostVO;
 
@@ -52,9 +54,9 @@ public class PostController {
 	 * 전체 포스팅 조회
 	 */
 	@GetMapping("/all")
-	public ResponseEntity<ApiResponse<List<PostVO>>> selectPost(){
+	public ResponseEntity<ApiResponse<PagingResponse<PostVO>>> selectPost(SearchDTO params){
 
-		List<PostVO> post = postService.getPostByAll();
+		PagingResponse<PostVO> post = postService.getPostByAll(params);
 		if(post != null) {
 			return ResponseUtil.buildResponse(HttpStatus.OK, "Posts selected successfully", post);
 		}else {
@@ -67,9 +69,9 @@ public class PostController {
 	 * 전체 포스팅 카운트
 	 */
 	@GetMapping("/all/count")
-	public ResponseEntity<ApiResponse<Long>> selectPostCount(){
+	public ResponseEntity<ApiResponse<Long>> selectPostCount(SearchDTO params){
 
-		long count = postService.getPostByAllCount();
+		long count = postService.getPostByAllCount(params);
 		
 		return ResponseUtil.buildResponse(HttpStatus.OK, "Posts selected successfully", count);
 	}

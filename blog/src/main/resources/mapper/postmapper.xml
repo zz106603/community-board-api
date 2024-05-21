@@ -28,7 +28,7 @@
 	    <result property="deleteYn" column="delete_yn" />
 	</resultMap>
 
-    <select id="findByAll" resultMap="postResultMap">
+    <select id="findByAll" resultMap="postResultMap" parameterType="com.spring.blog.dto.SearchDTO">
 		SELECT 
 			*
 		FROM 
@@ -37,10 +37,14 @@
 			delete_yn = 'N'
 		ORDER BY
 			update_date DESC
+		LIMIT 
+			#{recordSize} 
+		OFFSET
+			#{offset}
     </select>
     
     <!--전체 포스트 개수-->
-    <select id="findByAllCount" resultType="java.lang.Long">
+    <select id="findByAllCount" resultType="java.lang.Long" parameterType="com.spring.blog.dto.SearchDTO">
 		SELECT 
 			count(*)
 		FROM 
