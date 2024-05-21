@@ -109,7 +109,7 @@
 | 200 | Posts selected successfully | [{}, {} .. ] |
 | 404 | Posts not found | [{}] |
 
-![스크린샷 2024-05-20 142630](https://github.com/zz106603/blog_springboot/assets/45379781/8baf1173-3889-4a1a-86a7-60210465e1b1)
+![스크린샷 2024-05-21 165512](https://github.com/zz106603/blog_springboot/assets/45379781/82baf557-4e11-43c0-aec9-92a1a8a20a62)
 
 ---
 
