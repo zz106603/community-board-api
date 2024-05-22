@@ -158,7 +158,6 @@ public class PostController {
 			logger.error(e.getMessage());
 			return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "Post delete failed", e.getMessage());
 		}
-		
 	}
 	
 	

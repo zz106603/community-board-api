@@ -38,9 +38,10 @@
 		ORDER BY
 			update_date DESC
 		LIMIT 
-			#{recordSize} 
+			#{recordSize}
 		OFFSET
-			#{offset}
+			#{pagination.limitStart} 
+			
     </select>
     
     <!--전체 포스트 개수-->

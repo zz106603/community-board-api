@@ -5,10 +5,14 @@
 - 날짜별로 개발 현황 추가 예정
 
 ### 2024-05-20
-- 포스트 저장/수정/삭제/조회(전체, 개수, 단일) API 추가
+- 포스트 저장/수정/삭제/조회(전체, 개수, 단일) API 개발
 
 ### 2024-05-21
-- 페이징 코드 적용(Pagination 구현)
+- 페이징 기능 적용(Pagination 구현)
+
+### 2024-05-22
+- 사용자 테이블 생성
+- 사용자 회원가입 API 개발
 
 ---
 
@@ -20,6 +24,10 @@
 - [포스트 전체 조회 API 명세서]
 - [포스트 전체 개수 API 명세서]
 - [포스트 단일 조회 API 명세서]
+
+## 사용자 API
+
+- [사용자 등록 API 명세서]
 
 ---
 
@@ -147,3 +155,31 @@
 | 404 | Post not found with id:  + id | [{}] |
 
 ![스크린샷 2024-05-20 142942](https://github.com/zz106603/blog_springboot/assets/45379781/1ff0a72e-145b-4d34-8423-7a74d6fa8953)
+
+---
+
+## 사용자 등록 API 명세서
+
+### **POST /api/user/create**
+
+**Application/json**
+
+| Param | Type |
+| --- | --- |
+| loginId | String |
+| password | String |
+| name | String |
+| birthday | LocalDate |
+| gender | String |
+| email | String |
+| phone | String |
+
+### Response
+
+| Status | Message | Data |
+| --- | --- | --- |
+| 201 | User created successfully | 성공 |
+| 400 | User creation failed | 실패 |
+| 400 | User creation failed | 에러 메시지 |
+
+![스크린샷 2024-05-22 170825](https://github.com/zz106603/blog_springboot/assets/45379781/b1a14d85-af83-46c4-85b9-d4b3518f67ca)
