@@ -24,6 +24,7 @@ public class UserVO {
 	private String gender;
 	private String email;
 	private String phone;
+	private String roles;
 	
 	public long getId() {
 		return id;
@@ -96,6 +97,12 @@ public class UserVO {
 	}
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+	public String getRoles() {
+		return roles;
+	}
+	public void setRoles(String roles) {
+		this.roles = roles;
 	}
 	
 

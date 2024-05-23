@@ -15,7 +15,8 @@
 			phone,
 			create_date,
 			update_date, 
-			delete_yn)
+			delete_yn,
+			roles)
 		VALUES 
 			(#{loginId}, 
 			#{password}, 
@@ -26,7 +27,19 @@
 			#{phone},
 			#{createDate}, 
 			#{updateDate}, 
-			#{deleteYn})
+			#{deleteYn},
+			#{roles})
 	</insert>
+	
+	<!-- 아이디로 사용자 조회-->
+	<select id="findById" parameterType="String" resultType="com.spring.blog.vo.UserVO">
+		SELECT 
+			*
+		FROM 
+			users
+		WHERE
+			login_id = #{loginId}
+			
+    </select>
 
 </mapper>

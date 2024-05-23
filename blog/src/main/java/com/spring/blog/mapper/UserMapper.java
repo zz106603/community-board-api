@@ -14,5 +14,7 @@ public interface UserMapper {
 
 	int createUser(UserVO user);
 
+	UserVO findById(String loginId);
+
 	
 }

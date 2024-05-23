@@ -14,6 +14,11 @@
 - 사용자 테이블 생성
 - 사용자 회원가입 API 개발
 
+### 2024-05-23
+- Spring Security 적용 및 로그인 인증(/login)
+- CustomHandler 생성 및 클라이언트 응답
+- (추후 Jwt Token 적용 예정)
+
 ---
 
 ## 포스트 API
