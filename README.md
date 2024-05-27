@@ -19,6 +19,10 @@
 - CustomHandler 생성 및 클라이언트 응답
 - (추후 Jwt Token 적용 예정)
 
+### 2024-05-27
+- Security 및 Jwt 토큰 적용
+- Jwt 토큰 및 로그인 API 생성
+
 ---
 
 ## 포스트 API
@@ -165,7 +169,7 @@
 
 ## 사용자 등록 API 명세서
 
-### **POST /api/user/create**
+### **POST /api/auth/create**
 
 **Application/json**
 
@@ -188,3 +192,26 @@
 | 400 | User creation failed | 에러 메시지 |
 
 ![스크린샷 2024-05-22 170825](https://github.com/zz106603/blog_springboot/assets/45379781/b1a14d85-af83-46c4-85b9-d4b3518f67ca)
+
+---
+
+## Jwt 토큰 발급(로그인) API 명세서
+
+### **POST /api/auth/login**
+
+**Application/json**
+
+| Param | Type |
+| --- | --- |
+| loginId | String |
+| password | String |
+
+### Response
+
+| Status | Message | Data |
+| --- | --- | --- |
+| 200 | User login successfully | "grantType", "accessToken", "refreshToken" |
+| 400 | User login failed | 실패 |
+| 400 | User login failed | 에러 메시지 |
+
+![스크린샷 2024-05-27 200234](https://github.com/zz106603/blog_springboot/assets/45379781/612af233-b453-40a7-86be-80ce8720790e)

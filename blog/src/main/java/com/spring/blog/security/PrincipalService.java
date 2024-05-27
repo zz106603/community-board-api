@@ -12,19 +12,18 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.spring.blog.service.UserService;
+import com.spring.blog.service.AuthService;
 import com.spring.blog.vo.UserVO;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
-public class SecurityService implements UserDetailsService{
+public class PrincipalService implements UserDetailsService{
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
-	private UserService userService;
+	private AuthService userService;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -32,7 +31,7 @@ public class SecurityService implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
 		Optional<UserVO> findOne = userService.findOne(loginId);
-		logger.info("findOne : {}",findOne);
+		logger.info("findOne : {}",findOne.toString());
 		UserVO user = findOne.orElseThrow(() -> new UsernameNotFoundException("등록되지 않은 ID입니다."));
 
 		return User.builder()
@@ -42,13 +41,13 @@ public class SecurityService implements UserDetailsService{
 				.build();
 	}
 
-	//	    public UserVO createUser(String loginId, String password, PasswordEncoder passwordEncoder) {
-	//	    	UserVO newUser = new UserVO();
-	//	    	newUser.setLoginId(loginId);
-	//	    	newUser.setPassword(passwordEncoder.encode(password));
-	//	    	newUser.setRoles("USER");
-	//	        return newUser;
-	//	    }
+    public UserDetails createUserDetails(String loginId, String password, PasswordEncoder passwordEncoder) {
+    	return User.builder()
+    			.username(loginId)
+    			.password(passwordEncoder.encode(password))
+    			.roles("USER")
+    			.build();
+    }
 
 
 }

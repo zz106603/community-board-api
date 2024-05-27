@@ -14,19 +14,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.blog.service.UserService;
+import com.spring.blog.config.jwt.JwtToken;
+import com.spring.blog.service.AuthService;
 import com.spring.blog.util.ApiResponse;
 import com.spring.blog.util.ResponseUtil;
 import com.spring.blog.vo.UserVO;
 
 @RestController
-@RequestMapping("/api/user")
-public class UserController {
+@RequestMapping("/api/auth")
+public class AuthController {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
-	private UserService userService;
+	private AuthService authService;
 	
 	/*
 	 * 사용자 회원가입
@@ -36,7 +37,7 @@ public class UserController {
 	public ResponseEntity<ApiResponse<String>> createUser(@RequestBody UserVO user){
 		
 		try {
-			int createdUser = userService.createUser(user);
+			int createdUser = authService.createUser(user);
 			if(createdUser == 1) {
 				return ResponseUtil.buildResponse(HttpStatus.CREATED, "User created successfully", "성공");
 			}else {
@@ -57,7 +58,7 @@ public class UserController {
 	public ResponseEntity<ApiResponse<Optional<UserVO>>> selectUser(@RequestParam("loginId") String loginId){
 		
 		try {
-			Optional<UserVO> user = userService.findOne(loginId);
+			Optional<UserVO> user = authService.findOne(loginId);
 			if(user != null) {
 				return ResponseUtil.buildResponse(HttpStatus.CREATED, "User created successfully", user);
 			}else {
@@ -70,6 +71,27 @@ public class UserController {
 		
 	}
 	
+	
+	/*
+	 * 사용자 login
+	 */
+	@PostMapping("/login")
+	public ResponseEntity<ApiResponse<JwtToken>> login (@RequestBody UserVO user){
+		
+		try {
+			JwtToken token = authService.signIn(user.getLoginId(), user.getPassword());
+			
+			if(token != null) {
+				return ResponseUtil.buildResponse(HttpStatus.OK, "User login successfully", token);
+			}else {
+				return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "User login failed", null);
+			}
+		}catch(Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "User login failed", null);
+		}
+		
+	}
 		
 	
 }
