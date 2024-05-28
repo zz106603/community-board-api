@@ -104,6 +104,19 @@ public class UserVO {
 	public void setRoles(String roles) {
 		this.roles = roles;
 	}
+	@Override
+	public String toString() {
+		return "UserVO [id=" + id + ", loginId=" + loginId + ", password=" + password + ", name=" + name + ", birthday="
+				+ birthday + ", deleteYn=" + deleteYn + ", createDate=" + createDate + ", updateDate=" + updateDate
+				+ ", deleteDate=" + deleteDate + ", gender=" + gender + ", email=" + email + ", phone=" + phone
+				+ ", roles=" + roles + ", getId()=" + getId() + ", getLoginId()=" + getLoginId() + ", getPassword()="
+				+ getPassword() + ", getName()=" + getName() + ", getBirthday()=" + getBirthday() + ", getDeleteYn()="
+				+ getDeleteYn() + ", getCreateDate()=" + getCreateDate() + ", getUpdateDate()=" + getUpdateDate()
+				+ ", getDeleteDate()=" + getDeleteDate() + ", getGender()=" + getGender() + ", getEmail()=" + getEmail()
+				+ ", getPhone()=" + getPhone() + ", getRoles()=" + getRoles() + ", getClass()=" + getClass()
+				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+	}
+	
 	
 
 }

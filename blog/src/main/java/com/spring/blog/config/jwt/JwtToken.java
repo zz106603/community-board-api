@@ -1,11 +1,27 @@
 package com.spring.blog.config.jwt;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class JwtToken {
 	private String grantType;
     private String accessToken;
     private String refreshToken;
 
-    private JwtToken(Builder builder) {
+    public JwtToken() {
+        // 기본 생성자 필요
+    }
+
+    @JsonCreator
+    public JwtToken(@JsonProperty("grantType") String grantType,
+                    @JsonProperty("accessToken") String accessToken,
+                    @JsonProperty("refreshToken") String refreshToken) {
+        this.grantType = grantType;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
+    
+	private JwtToken(Builder builder) {
     	this.grantType = builder.grantType;
         this.accessToken = builder.accessToken;
         this.refreshToken = builder.refreshToken;

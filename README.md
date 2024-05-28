@@ -21,7 +21,11 @@
 
 ### 2024-05-27
 - Security 및 Jwt 토큰 적용
-- Jwt 토큰 및 로그인 API 생성
+- Jwt 토큰 및 로그인 API 개발
+
+### 2024-05-28
+- AccessToken/RefreshToken 처리 및 응답
+- RefreshToken 활용 AccessToken 재발급 API 개발
 
 ---
 
@@ -215,3 +219,25 @@
 | 400 | User login failed | 에러 메시지 |
 
 ![스크린샷 2024-05-27 200234](https://github.com/zz106603/blog_springboot/assets/45379781/612af233-b453-40a7-86be-80ce8720790e)
+
+---
+
+## Jwt 토큰 재발급(Refresh) API 명세서
+
+### **POST /api/auth/refresh**
+
+**Application/json**
+
+| Param | Type |
+| --- | --- |
+| refrehToken | String |
+
+### Response
+
+| Status | Message | Data |
+| --- | --- | --- |
+| 200 | User login successfully | "accessToken"|
+| 400 | User login failed | 실패 |
+| 400 | User login failed | 에러 메시지 |
+
+![스크린샷 2024-05-28 170707](https://github.com/zz106603/blog_springboot/assets/45379781/0385a31c-5a3c-4ceb-bf3e-61c2305ac94f)

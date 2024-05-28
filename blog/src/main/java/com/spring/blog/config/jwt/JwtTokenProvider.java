@@ -52,7 +52,7 @@ public class JwtTokenProvider {
         long now = (new Date()).getTime();
 
         // Access Token 생성
-        Date accessTokenExpiresIn = new Date(now + 86400000);
+        Date accessTokenExpiresIn = new Date(now + 3600000);
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
@@ -62,6 +62,8 @@ public class JwtTokenProvider {
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
+        		.setSubject(authentication.getName())
+        		.claim("auth", authorities)
                 .setExpiration(new Date(now + 86400000))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -115,16 +117,41 @@ public class JwtTokenProvider {
 
 
     // accessToken
-    private Claims parseClaims(String accessToken) {
+    private Claims parseClaims(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
-                    .parseClaimsJws(accessToken)
+                    .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+    
+    public String refreshAccessToken(String refreshToken) {
+        if (validateToken(refreshToken)) {
+            Claims claims = parseClaims(refreshToken);
+            String username = claims.getSubject();
+           
+            // 새로운 Access Token 생성
+            long now = (new Date()).getTime();
+            Date accessTokenExpiresIn = new Date(now + 86400000); // 1일 유효
+
+            String authorities = claims.get("auth", String.class);
+            
+            String newAccessToken = Jwts.builder()
+                    .setSubject(username)
+                    .claim("auth", authorities)
+                    .setExpiration(accessTokenExpiresIn)
+                    .signWith(key, SignatureAlgorithm.HS256)
+                    .compact();
+            
+            System.out.println(newAccessToken);
+
+            return newAccessToken;
+        }
+        throw new RuntimeException("Invalid refresh token");
     }
 
 }

@@ -1,6 +1,7 @@
 package com.spring.blog.config.jwt;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,9 +24,28 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 		this.jwtTokenProvider = jwtTokenProvider;
 	}
 
+	// permitAll()로 설정된 엔드포인트인지 확인하는 메서드
+	private boolean isPermitAllEndpoint(String requestURI) {
+	    // 허용된 경로를 지정하고, requestURI와 일치하는지 확인
+	    return Arrays.asList("/api/auth/login", 
+	    		"/api/auth/create", 
+	    		"/api/auth/refresh",
+	    		"/login", 
+	    		"/").contains(requestURI);
+	}
+	
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+	    String requestURI = httpRequest.getRequestURI();
+
+	    // permitAll()로 설정된 엔드포인트에 대해서는 JWT 검증을 수행하지 않고 다음 필터로 요청을 전달
+	    if (isPermitAllEndpoint(requestURI)) {
+	        chain.doFilter(request, response);
+	        return;
+	    }
+		
 		try {
 			// 1. Request Header에서 JWT 토큰 추출
 			String token = resolveToken((HttpServletRequest) request);

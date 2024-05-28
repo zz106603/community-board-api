@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.blog.config.jwt.JwtToken;
+import com.spring.blog.config.jwt.JwtTokenProvider;
 import com.spring.blog.service.AuthService;
 import com.spring.blog.util.ApiResponse;
 import com.spring.blog.util.ResponseUtil;
@@ -28,6 +29,9 @@ public class AuthController {
 	
 	@Autowired
 	private AuthService authService;
+	
+	@Autowired
+    private JwtTokenProvider jwtTokenProvider;
 	
 	/*
 	 * 사용자 회원가입
@@ -49,6 +53,27 @@ public class AuthController {
 		}
 		
 	}
+	
+	/*
+	 * AccessToken 재발급
+	 */
+	@PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<String>> refreshAccessToken(@RequestBody JwtToken token) {
+        String refreshToken = token.getRefreshToken();
+
+        try {
+        	String newAccessToken = jwtTokenProvider.refreshAccessToken(refreshToken);
+			
+			if(newAccessToken != null) {
+				return ResponseUtil.buildResponse(HttpStatus.OK, "User login successfully", newAccessToken);
+			}else {
+				return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "User login failed", null);
+			}
+		}catch(Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "User login failed", null);
+		}
+    }
 	
 	/*
 	 * 사용자 조회 TEST

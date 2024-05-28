@@ -11,11 +11,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.spring.blog.config.jwt.JwtAuthenticationEntryPoint;
 import com.spring.blog.config.jwt.JwtAuthenticationFilter;
 import com.spring.blog.config.jwt.JwtTokenProvider;
 
@@ -26,18 +24,6 @@ public class SecurityConfig{
 
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
-	
-	@Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-	// 스프링 시큐리티 기능 비활성화 (H2 DB 접근을 위해)
-	//	@Bean
-	//	public WebSecurityCustomizer configure() {
-	//		return (web -> web.ignoring()
-	//				.requestMatchers(toH2Console())
-	//				.requestMatchers("/h2-console/**")
-	//		);
-	//	}
 
 	/**
 	 * 이 메서드는 정적 자원에 대해 보안을 적용하지 않도록 설정한다.
@@ -59,8 +45,11 @@ public class SecurityConfig{
 		.formLogin(AbstractHttpConfigurer::disable) // Json을 통한 로그인 진행으로 refresh 토큰 만료 전까지 토큰 인증
 		.authorizeHttpRequests((authorize) -> authorize
 				.requestMatchers("/api/posts/**").hasRole("USER")
-				.requestMatchers("/login", "/").permitAll()
-				.requestMatchers("/api/auth/login", "/").permitAll()
+				.requestMatchers("/api/auth/login", 
+						"/api/auth/create",
+						"/api/auth/refresh",
+						"/login", 
+						"/").permitAll()
 				.anyRequest().authenticated())
 		.formLogin(formLogin -> formLogin
 				.disable()
@@ -79,8 +68,6 @@ public class SecurityConfig{
 				.permitAll())
 		.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//		.exceptionHandling(exceptionHandling -> 
-//	            exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint)
 		);
 		
 		return http.build();
