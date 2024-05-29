@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.blog.config.jwt.JwtToken;
 import com.spring.blog.config.jwt.JwtTokenProvider;
+import com.spring.blog.security.PrincipalService;
 import com.spring.blog.service.AuthService;
 import com.spring.blog.util.ApiResponse;
 import com.spring.blog.util.ResponseUtil;
@@ -32,6 +33,9 @@ public class AuthController {
 	
 	@Autowired
     private JwtTokenProvider jwtTokenProvider;
+	
+	@Autowired
+	private PrincipalService principalService;
 	
 	/*
 	 * 사용자 회원가입

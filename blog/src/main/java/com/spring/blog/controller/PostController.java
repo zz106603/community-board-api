@@ -24,6 +24,7 @@ import com.spring.blog.util.ApiResponse;
 import com.spring.blog.util.PagingResponse;
 import com.spring.blog.util.ResponseUtil;
 import com.spring.blog.vo.PostVO;
+import com.spring.blog.vo.RecommendVO;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -43,8 +44,6 @@ public class PostController {
         }
         
         return authentication.getName();
-		
-		
 	}
 	
 	/*
@@ -55,10 +54,12 @@ public class PostController {
 	public ResponseEntity<ApiResponse<PostVO>> selectPost(@PathVariable("id") Long id){
 
 		PostVO post = postService.getPostById(id);
+		
 		if(post != null) {
+			int selectCount = postService.selectCountIncrease(id);
 			return ResponseUtil.buildResponse(HttpStatus.OK, "Post selected successfully", post);
 		}else {
-			return ResponseUtil.buildResponse(HttpStatus.NOT_FOUND, "Post not found with id: " + id, post);
+			return ResponseUtil.buildResponse(HttpStatus.NO_CONTENT, "Post not found with id: " + id, post);
 		}
 		
 	}
@@ -73,7 +74,7 @@ public class PostController {
 		if(post != null) {
 			return ResponseUtil.buildResponse(HttpStatus.OK, "Posts selected successfully", post);
 		}else {
-			return ResponseUtil.buildResponse(HttpStatus.NOT_FOUND, "Posts not found", post);
+			return ResponseUtil.buildResponse(HttpStatus.NO_CONTENT, "Posts not found", post);
 		}
 		
 	}
@@ -173,6 +174,47 @@ public class PostController {
 		}
 	}
 	
+	/*
+	 * 포스팅 추천
+	 */
+	@PostMapping("/recom")
+	public ResponseEntity<ApiResponse<String>> recomCountPost(@RequestBody RecommendVO recommend){
+		
+		try {
+			int recomPost = postService.recomCountIncrease(recommend.getPostId());
+			int recomPostUserInfo = postService.recomUserInfoUpdate(recommend);
+			
+			if(recomPost == 1 && recomPostUserInfo == 1) {
+				return ResponseUtil.buildResponse(HttpStatus.CREATED, "Post recommendation successfully", "성공");
+			}else {
+				return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "Post recommendation failed", "실패");
+			}
+		}catch(Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "Post recommendation failed", e.getMessage());
+		}
+		
+	}
 	
+	/*
+	 * 포스팅 추천 사용자 조회
+	 */
+	@GetMapping("/recom/check")
+	public ResponseEntity<ApiResponse<RecommendVO>> checkPostRecom(@RequestParam("userId") String userId, @RequestParam("postId") Long postId){
+
+		RecommendVO recommend = new RecommendVO();
+		recommend.setUserId(userId);
+		recommend.setPostId(postId);
+		
+		RecommendVO recom = postService.getPostRecomByUserIdAndPostId(recommend);
+		System.out.println(recom);
+		
+		if(recom != null) {
+			return ResponseUtil.buildResponse(HttpStatus.OK, "Post recommendation selected successfully", recom);
+		}else {
+			return ResponseUtil.buildResponse(HttpStatus.NO_CONTENT, "Post recommendation not found with id: " + recommend.getPostId(), recom);
+		}
+		
+	}
 	
 }

@@ -17,6 +17,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.spring.blog.security.PrincipalDetails;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -67,11 +69,21 @@ public class JwtTokenProvider {
                 .setExpiration(new Date(now + 86400000))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+        
+        
+        //loginId 및 userName 세팅
+        String loginId = authentication.getName();
+//        PrincipalDetails userDetails = (PrincipalDetails) authentication.getPrincipal();
+//        String userName = ((PrincipalDetails)userDetails).getName();
+        logger.info(loginId);
+//        logger.info(userName);
 
         return JwtToken.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .loginId(loginId)
+//                .userName(userName)
                 .build();
     }
 
@@ -147,7 +159,6 @@ public class JwtTokenProvider {
                     .signWith(key, SignatureAlgorithm.HS256)
                     .compact();
             
-            System.out.println(newAccessToken);
 
             return newAccessToken;
         }

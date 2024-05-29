@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 import com.spring.blog.dto.Pagination;
 import com.spring.blog.dto.SearchDTO;
 import com.spring.blog.mapper.PostMapper;
+import com.spring.blog.mapper.RecommendMapper;
 import com.spring.blog.util.PagingResponse;
 import com.spring.blog.vo.PostVO;
+import com.spring.blog.vo.RecommendVO;
 
 @Service
 public class PostServiceImpl implements PostService{
@@ -22,6 +24,9 @@ public class PostServiceImpl implements PostService{
 	
 	@Autowired
 	private PostMapper postMapper;
+	
+	@Autowired
+	private RecommendMapper recommendMapper;
 
 	/*
 	 * 단일 포스트 조회
@@ -96,6 +101,8 @@ public class PostServiceImpl implements PostService{
 			LocalDateTime now = LocalDateTime.now();
 			post.setWriteDate(now);
 			post.setUpdateDate(now);
+			post.setSelectCount(0);
+			post.setRecomCount(0);
 			int res = postMapper.createPost(post);
 			return res;
 		}catch(Exception e) {
@@ -143,6 +150,73 @@ public class PostServiceImpl implements PostService{
 			return 0;
 		}
 	}
+	
+	/*
+	 * 포스트 조회수 증가
+	 */
+	@Override
+	public int selectCountIncrease(Long id) {
+		try {
+			int res = postMapper.updateSelectCount(id);
+			return res;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return 0;
+		}
+	}
+	
+	/*
+	 * ---------------------------아래부터 추천 테이블 관련----------------------------------- 
+	 */
+	
+	/*
+	 * 포스트 추천수 증가
+	 */
+	@Override
+	public int recomCountIncrease(Long id) {
+		try {
+			int res = postMapper.updateRecomCount(id);
+			return res;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return 0;
+		}
+	}
+	
+	/*
+	 * 포스트 추천 사용자 정보 저장
+	 */
+	@Override
+	public int recomUserInfoUpdate(RecommendVO recommend) {
+		
+		try {
+			recommend.setRecommendDate(LocalDateTime.now());
+			recommend.setDeleteYn("N");
+			int res = recommendMapper.updateRecomUserInfo(recommend);
+			return res;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return 0;
+		}
+	}
 
+	/*
+	 * 추천 사용자 단일 조회
+	 */
+	@Override
+	public RecommendVO getPostRecomByUserIdAndPostId(RecommendVO recommend) {
+		
+		try {
+			RecommendVO recom = recommendMapper.findByUserIdAndPostId(recommend);
+			return recom;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return null;
+		}
+	}
 	
 }

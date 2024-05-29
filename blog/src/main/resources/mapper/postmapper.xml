@@ -22,6 +22,8 @@
 	    <result property="title" column="title" />
 	    <result property="content" column="content" />
 	    <result property="writer" column="writer" />
+	    <result property="selectCount" column="select_count" />
+	    <result property="recomCount" column="recom_count" />
 	    <result property="writeDate" column="write_date" />
 	    <result property="updateDate" column="update_date" />
 	    <result property="deleteDate" column="delete_date" />
@@ -56,8 +58,8 @@
     
     <!--포스트 등록-->
     <insert id="createPost" parameterType="com.spring.blog.vo.PostVO">
-		INSERT INTO post (title, content, writer, category, write_date, update_date, delete_yn)
-		VALUES (#{title}, #{content}, #{writer}, #{category}, #{writeDate}, #{updateDate}, #{deleteYn})
+		INSERT INTO post (title, content, writer, category, write_date, update_date, delete_yn, select_count, recom_count)
+		VALUES (#{title}, #{content}, #{writer}, #{category}, #{writeDate}, #{updateDate}, #{deleteYn}, #{selectCount}, #{recomCount})
 	</insert>
 	
     <!-- 포스트 업데이트 -->
@@ -80,5 +82,21 @@
 	    	delete_date = #{deleteDate}
 	    WHERE id = #{id}
     </delete>
+    
+    <!-- 포스트 조회수 업데이트 -->
+	<update id="updateSelectCount" parameterType="java.lang.Long">
+	    UPDATE post
+	    SET 
+	    	select_count = select_count + 1
+	    WHERE id = #{id}
+	</update>
+	
+	 <!-- 포스트 추천수 업데이트 -->
+	<update id="updateRecomCount" parameterType="java.lang.Long">
+	    UPDATE post
+	    SET 
+	    	recom_count = recom_count + 1
+	    WHERE id = #{id}
+	</update>
 
 </mapper>

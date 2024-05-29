@@ -16,6 +16,8 @@ public class PostVO {
 	private String content;
 	private String writer;
 	private String category;
+	private long selectCount;
+	private long recomCount;
 	private LocalDateTime writeDate;
 	private LocalDateTime updateDate;
 	private LocalDateTime deleteDate;
@@ -25,6 +27,23 @@ public class PostVO {
 		return id;
 	}
 	public void setId(Long id) {
+		this.id = id;
+	}
+	
+	public long getSelectCount() {
+		return selectCount;
+	}
+	public void setSelectCount(long selectCount) {
+		this.selectCount = selectCount;
+	}
+	
+	public long getRecomCount() {
+		return recomCount;
+	}
+	public void setRecomCount(long recomCount) {
+		this.recomCount = recomCount;
+	}
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getTitle() {

@@ -27,6 +27,10 @@
 - AccessToken/RefreshToken 처리 및 응답
 - RefreshToken 활용 AccessToken 재발급 API 개발
 
+### 2024-05-29
+- 사용자 ID 및 로그인/로그아웃 화면 연동
+- 조회/추천수 API 개발(조회/추천수 증가, 추천 테이블 생성 및 사용자 정보 연동)
+
 ---
 
 ## 포스트 API
@@ -241,3 +245,11 @@
 | 400 | User login failed | 에러 메시지 |
 
 ![스크린샷 2024-05-28 170707](https://github.com/zz106603/blog_springboot/assets/45379781/0385a31c-5a3c-4ceb-bf3e-61c2305ac94f)
+
+---
+
+## 포스팅 추천 사용자 등록 API 명세서
+
+---
+
+## 포스팅 추천 사용자 조회 API 명세서(클라이언트 버튼 비활성화)

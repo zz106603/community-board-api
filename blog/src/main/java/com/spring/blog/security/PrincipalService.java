@@ -40,6 +40,15 @@ public class PrincipalService implements UserDetailsService{
 				.roles(user.getRoles())
 				.build();
 	}
+	
+	public UserVO findByUsername(String loginId) {
+		Optional<UserVO> findOne = userService.findOne(loginId);
+		logger.info("findOne : {}",findOne.toString());
+		
+		UserVO user = findOne.orElseThrow(() -> new UsernameNotFoundException("등록되지 않은 ID입니다."));
+		
+		return user;
+    }
 
     public UserDetails createUserDetails(String loginId, String password, PasswordEncoder passwordEncoder) {
     	return User.builder()

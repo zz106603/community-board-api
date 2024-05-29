@@ -23,5 +23,9 @@ public interface PostMapper {
 
 	long findByAllCount(SearchDTO params);
 
+	int updateSelectCount(Long id);
+
+	int updateRecomCount(Long id);
+
 	
 }
