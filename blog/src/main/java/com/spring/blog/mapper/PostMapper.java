@@ -26,6 +26,7 @@ public interface PostMapper {
 	int updateSelectCount(Long id);
 
 	int updateRecomCount(Long id);
+	int deleteRecomCount(Long id);
 
 	
 }

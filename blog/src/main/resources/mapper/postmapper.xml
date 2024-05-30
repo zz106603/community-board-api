@@ -38,7 +38,7 @@
 		WHERE
 			delete_yn = 'N'
 		ORDER BY
-			update_date DESC
+			${orderCol}
 		LIMIT 
 			#{recordSize}
 		OFFSET
@@ -91,11 +91,19 @@
 	    WHERE id = #{id}
 	</update>
 	
-	 <!-- 포스트 추천수 업데이트 -->
+	 <!-- 포스트 추천수 업데이트(Up) -->
 	<update id="updateRecomCount" parameterType="java.lang.Long">
 	    UPDATE post
 	    SET 
 	    	recom_count = recom_count + 1
+	    WHERE id = #{id}
+	</update>
+	
+	 <!-- 포스트 추천수 업데이트(Down) -->
+	<update id="deleteRecomCount" parameterType="java.lang.Long">
+	    UPDATE post
+	    SET 
+	    	recom_count = recom_count - 1
 	    WHERE id = #{id}
 	</update>
 

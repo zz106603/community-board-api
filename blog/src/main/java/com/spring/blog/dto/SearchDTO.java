@@ -9,11 +9,15 @@ public class SearchDTO {
 	private String serchType;
 	private Pagination pagination;
 	
+	private int orderType;
+	private String orderCol;
+	
 	
 	public SearchDTO() {
 		this.page = 1;
 		this.recordSize = 10;
 		this.pageSize = 5;
+		this.orderType = 1;
 	}
 	
 	public long getOffset() {
@@ -58,6 +62,37 @@ public class SearchDTO {
 	public void setPagination(Pagination pagination) {
 		this.pagination = pagination;
 	}
+
+	public int getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(int orderType) {
+		this.orderType = orderType;
+	}
+
+	public String getOrderCol() {
+		return orderCol;
+	}
+
+	public void setOrderCol(String orderCol) {
+		this.orderCol = orderCol;
+	}
+
+	@Override
+	public String toString() {
+		return "SearchDTO [page=" + page + ", recordSize=" + recordSize + ", pageSize=" + pageSize + ", keyword="
+				+ keyword + ", serchType=" + serchType + ", pagination=" + pagination + ", orderType=" + orderType
+				+ ", orderCol=" + orderCol + ", getOffset()=" + getOffset() + ", getPage()=" + getPage()
+				+ ", getRecordSize()=" + getRecordSize() + ", getPageSize()=" + getPageSize() + ", getKeyword()="
+				+ getKeyword() + ", getSerchType()=" + getSerchType() + ", getPagination()=" + getPagination()
+				+ ", getOrderType()=" + getOrderType() + ", getOrderCol()=" + getOrderCol() + ", getClass()="
+				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+	}
+	
+	
+	
+	
 	
 	
 	

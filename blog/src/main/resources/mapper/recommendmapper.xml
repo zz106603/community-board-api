@@ -9,6 +9,20 @@
 		VALUES (#{userId}, #{postId}, #{recommendDate}, #{deleteYn}, #{deleteDate})
 	</insert>
 	
+	<!-- 추천 사용자 정보 삭제 -->
+	<update id="deleteRecomUserInfo" parameterType="com.spring.blog.vo.RecommendVO">
+	    UPDATE recommend
+	    SET 
+	    	delete_yn = #{deleteYn},
+	    	delete_date = #{deleteDate}
+	    WHERE
+			user_id = #{userId}
+		AND
+			post_id = #{postId}
+		AND
+			delete_yn = 'N'
+	</update>
+	
 	<!--추천 사용자 정보 조회-->
 	<select id="findByUserIdAndPostId" parameterType="com.spring.blog.vo.RecommendVO" resultType="com.spring.blog.vo.RecommendVO">
 		SELECT 
@@ -23,5 +37,6 @@
 			delete_yn = 'N'
 			
     </select>
+    
 
 </mapper>

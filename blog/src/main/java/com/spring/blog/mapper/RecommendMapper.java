@@ -12,9 +12,15 @@ import com.spring.blog.vo.RecommendVO;
 @Mapper
 public interface RecommendMapper {
 
+	/*
+	 * 추천 사용자 정보
+	 */
 	int updateRecomUserInfo(RecommendVO recommend);
+	int deleteRecomUserInfo(RecommendVO recommend);
 
 	RecommendVO findByUserIdAndPostId(RecommendVO recommend);
+
+	
 
 	
 }

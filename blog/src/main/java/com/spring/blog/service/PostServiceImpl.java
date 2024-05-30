@@ -51,6 +51,24 @@ public class PostServiceImpl implements PostService{
 	public PagingResponse<PostVO> getPostByAll(SearchDTO params) {
 		
 		try {
+			/*
+			 * orderType: 정렬 기준
+			 * 1: 최신순
+			 * 2: 오래된순
+			 * 3: 조회순
+			 * 4: 추천순
+			 */
+			if(params.getOrderType() == 1) {
+				params.setOrderCol("write_date DESC");
+			}else if(params.getOrderType() == 2) {
+				params.setOrderCol("write_date ASC");
+			}else if(params.getOrderType() == 3) {
+				params.setOrderCol("select_count DESC");
+			}else if(params.getOrderType() == 4) {
+				params.setOrderCol("recom_count DESC");
+			}
+			logger.info(params.toString());
+			
 			// 조건에 해당하는 데이터가 없는 경우, 응답 데이터에 비어있는 리스트와 null을 담아 반환
 			long count = postMapper.findByAllCount(params);
 			if(count < 1) {
@@ -174,9 +192,24 @@ public class PostServiceImpl implements PostService{
 	 * 포스트 추천수 증가
 	 */
 	@Override
-	public int recomCountIncrease(Long id) {
+	public int recomCountIncrease(Long postId) {
 		try {
-			int res = postMapper.updateRecomCount(id);
+			int res = postMapper.updateRecomCount(postId);
+			return res;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return 0;
+		}
+	}
+	
+	/*
+	 * 포스트 추천수 감소
+	 */
+	@Override
+	public int recomCountDecrease(Long postId) {
+		try {
+			int res = postMapper.deleteRecomCount(postId);
 			return res;
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -195,6 +228,24 @@ public class PostServiceImpl implements PostService{
 			recommend.setRecommendDate(LocalDateTime.now());
 			recommend.setDeleteYn("N");
 			int res = recommendMapper.updateRecomUserInfo(recommend);
+			return res;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return 0;
+		}
+	}
+	
+	/*
+	 * 포스트 추천 사용자 정보 삭제
+	 */
+	@Override
+	public int recomUserInfoDelete(RecommendVO recommend) {
+		
+		try {
+			recommend.setDeleteDate(LocalDateTime.now());
+			recommend.setDeleteYn("Y");
+			int res = recommendMapper.deleteRecomUserInfo(recommend);
 			return res;
 		}catch(Exception e) {
 			e.printStackTrace();

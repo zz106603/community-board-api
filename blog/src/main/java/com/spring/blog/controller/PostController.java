@@ -51,12 +51,15 @@ public class PostController {
 	 * {postId}
 	 */
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<PostVO>> selectPost(@PathVariable("id") Long id){
+	public ResponseEntity<ApiResponse<PostVO>> selectPost(@PathVariable("id") Long id, @RequestParam("firstFlag") int firstFlag){
 
+		logger.info(String.valueOf(firstFlag));
 		PostVO post = postService.getPostById(id);
 		
 		if(post != null) {
-			int selectCount = postService.selectCountIncrease(id);
+			if(firstFlag == 1) {
+				int selectCount = postService.selectCountIncrease(id);
+			}
 			return ResponseUtil.buildResponse(HttpStatus.OK, "Post selected successfully", post);
 		}else {
 			return ResponseUtil.buildResponse(HttpStatus.NO_CONTENT, "Post not found with id: " + id, post);
@@ -69,7 +72,16 @@ public class PostController {
 	 */
 	@GetMapping("/all")
 	public ResponseEntity<ApiResponse<PagingResponse<PostVO>>> selectPost(SearchDTO params){
+		
+		logger.info(String.valueOf(params.getOrderType()));
 
+		/*
+		 * orderType: 정렬 기준
+		 * 1: 최신순
+		 * 2: 오래된순
+		 * 3: 조회순
+		 * 4: 추천순
+		 */
 		PagingResponse<PostVO> post = postService.getPostByAll(params);
 		if(post != null) {
 			return ResponseUtil.buildResponse(HttpStatus.OK, "Posts selected successfully", post);
@@ -175,14 +187,27 @@ public class PostController {
 	}
 	
 	/*
-	 * 포스팅 추천
+	 *	-----------------추천---------------------- 
+	 */
+	
+	/*
+	 * 포스팅 추천 UP/DOWN
 	 */
 	@PostMapping("/recom")
 	public ResponseEntity<ApiResponse<String>> recomCountPost(@RequestBody RecommendVO recommend){
 		
 		try {
-			int recomPost = postService.recomCountIncrease(recommend.getPostId());
-			int recomPostUserInfo = postService.recomUserInfoUpdate(recommend);
+			
+			int recomPost = 0;
+			int recomPostUserInfo = 0;
+			if(recommend.getCountFlag() == 1) { //UP
+				recomPost = postService.recomCountIncrease(recommend.getPostId());
+				recomPostUserInfo = postService.recomUserInfoUpdate(recommend);
+				
+			}else { //DOWN
+				recomPost = postService.recomCountDecrease(recommend.getPostId());
+				recomPostUserInfo = postService.recomUserInfoDelete(recommend);
+			}
 			
 			if(recomPost == 1 && recomPostUserInfo == 1) {
 				return ResponseUtil.buildResponse(HttpStatus.CREATED, "Post recommendation successfully", "성공");

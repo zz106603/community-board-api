@@ -11,6 +11,8 @@ public class RecommendVO {
 	private String deleteYn;
 	private LocalDateTime deleteDate;
 	
+	private int countFlag;
+	
 	public long getId() {
 		return id;
 	}
@@ -47,6 +49,12 @@ public class RecommendVO {
 	}
 	public void setDeleteDate(LocalDateTime deleteDate) {
 		this.deleteDate = deleteDate;
+	}
+	public int getCountFlag() {
+		return countFlag;
+	}
+	public void setCountFlag(int countFlag) {
+		this.countFlag = countFlag;
 	}
 
 	
