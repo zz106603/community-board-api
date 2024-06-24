@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.blog.mapper.CommentMapper">
+    
+    <!--추천 사용자 정보 등록-->
+    <insert id="createComment" parameterType="com.spring.blog.vo.CommentVO">
+		INSERT INTO comment (user_id, post_id, comment, comment_date, delete_yn, delete_date)
+		VALUES (#{userId}, #{postId}, #{comment}, #{commentDate}, #{deleteYn}, #{deleteDate})
+	</insert>
+
+</mapper>

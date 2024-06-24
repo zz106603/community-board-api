@@ -2,6 +2,7 @@ package com.spring.blog.service;
 
 import com.spring.blog.dto.SearchDTO;
 import com.spring.blog.util.PagingResponse;
+import com.spring.blog.vo.CommentVO;
 import com.spring.blog.vo.PostVO;
 import com.spring.blog.vo.RecommendVO;
 
@@ -34,6 +35,11 @@ public interface PostService{
 	public int recomUserInfoDelete(RecommendVO recommend);
 
 	public RecommendVO getPostRecomByUserIdAndPostId(RecommendVO recommend);
+
+	/*
+	 * 댓글
+	 */
+	public int createComment(CommentVO comment);
 
 	
 

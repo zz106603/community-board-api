@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 
 import com.spring.blog.dto.Pagination;
 import com.spring.blog.dto.SearchDTO;
+import com.spring.blog.mapper.CommentMapper;
 import com.spring.blog.mapper.PostMapper;
 import com.spring.blog.mapper.RecommendMapper;
 import com.spring.blog.util.PagingResponse;
+import com.spring.blog.vo.CommentVO;
 import com.spring.blog.vo.PostVO;
 import com.spring.blog.vo.RecommendVO;
 
@@ -27,6 +29,9 @@ public class PostServiceImpl implements PostService{
 	
 	@Autowired
 	private RecommendMapper recommendMapper;
+	
+	@Autowired
+	private CommentMapper commentMapper;	
 
 	/*
 	 * 단일 포스트 조회
@@ -267,6 +272,24 @@ public class PostServiceImpl implements PostService{
 			e.printStackTrace();
 			logger.info(e.getMessage());
 			return null;
+		}
+	}
+
+	/*
+	 * 댓글 등록
+	 */
+	@Override
+	public int createComment(CommentVO comment) {
+		try {
+			comment.setDeleteYn("N");
+			LocalDateTime now = LocalDateTime.now();
+			comment.setCommentDate(now);
+			int res = commentMapper.createComment(comment);
+			return res;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return 0;
 		}
 	}
 	

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.spring.blog.dto.SearchDTO;
+import com.spring.blog.vo.CommentVO;
 import com.spring.blog.vo.PostVO;
 
 @Mapper
@@ -27,6 +28,8 @@ public interface PostMapper {
 
 	int updateRecomCount(Long id);
 	int deleteRecomCount(Long id);
+
+	int createComment(CommentVO comment);
 
 	
 }

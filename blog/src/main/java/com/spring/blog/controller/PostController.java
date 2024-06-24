@@ -23,6 +23,7 @@ import com.spring.blog.service.PostService;
 import com.spring.blog.util.ApiResponse;
 import com.spring.blog.util.PagingResponse;
 import com.spring.blog.util.ResponseUtil;
+import com.spring.blog.vo.CommentVO;
 import com.spring.blog.vo.PostVO;
 import com.spring.blog.vo.RecommendVO;
 
@@ -64,7 +65,6 @@ public class PostController {
 		}else {
 			return ResponseUtil.buildResponse(HttpStatus.NO_CONTENT, "Post not found with id: " + id, post);
 		}
-		
 	}
 	
 	/*
@@ -238,6 +238,26 @@ public class PostController {
 			return ResponseUtil.buildResponse(HttpStatus.OK, "Post recommendation selected successfully", recom);
 		}else {
 			return ResponseUtil.buildResponse(HttpStatus.NO_CONTENT, "Post recommendation not found with id: " + recommend.getPostId(), recom);
+		}
+		
+	}
+	
+	/*
+	 * 댓글 등록
+	 */
+	@PostMapping("/comment/create")
+	public ResponseEntity<ApiResponse<String>> createComment(@RequestBody CommentVO comment){
+		
+		try {
+			int createdComment = postService.createComment(comment);
+			if(createdComment == 1) {
+				return ResponseUtil.buildResponse(HttpStatus.CREATED, "Comment created successfully", "성공");
+			}else {
+				return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "Comment creation failed", "실패");
+			}
+		}catch(Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "Comment creation failed", e.getMessage());
 		}
 		
 	}
