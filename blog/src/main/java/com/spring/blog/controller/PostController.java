@@ -1,6 +1,8 @@
 package com.spring.blog.controller;
 
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,19 +53,19 @@ public class PostController {
 	 * 단일 포스팅 조회
 	 * {postId}
 	 */
-	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<PostVO>> selectPost(@PathVariable("id") Long id, @RequestParam("firstFlag") int firstFlag){
+	@GetMapping("/{postId}")
+	public ResponseEntity<ApiResponse<PostVO>> selectPost(@PathVariable("postId") Long postId, @RequestParam("firstFlag") int firstFlag){
 
 		logger.info(String.valueOf(firstFlag));
-		PostVO post = postService.getPostById(id);
+		PostVO post = postService.getPostById(postId);
 		
 		if(post != null) {
 			if(firstFlag == 1) {
-				int selectCount = postService.selectCountIncrease(id);
+				int selectCount = postService.selectCountIncrease(postId);
 			}
 			return ResponseUtil.buildResponse(HttpStatus.OK, "Post selected successfully", post);
 		}else {
-			return ResponseUtil.buildResponse(HttpStatus.NO_CONTENT, "Post not found with id: " + id, post);
+			return ResponseUtil.buildResponse(HttpStatus.NO_CONTENT, "Post not found with id: " + postId, post);
 		}
 	}
 	
@@ -171,10 +173,10 @@ public class PostController {
 	 * title, content, writer, category
 	 */
 	@DeleteMapping("/delete")
-	public ResponseEntity<ApiResponse<String>> deletePost(@RequestParam("id") Long id){
+	public ResponseEntity<ApiResponse<String>> deletePost(@RequestParam("postId") Long postId){
 		
 		try {
-			int deletedPost = postService.deletePost(id);
+			int deletedPost = postService.deletePost(postId);
 			if(deletedPost == 1) {
 				return ResponseUtil.buildResponse(HttpStatus.CREATED, "Post deleted successfully", "성공");
 			}else {
@@ -261,5 +263,40 @@ public class PostController {
 		}
 		
 	}
+	
+	/*
+	 * 포스팅 댓글 조회
+	 */
+	@GetMapping("/comment/{postId}")
+	public ResponseEntity<ApiResponse<List<CommentVO>>> selectComment(@PathVariable("postId") Long postId){
+
+		List<CommentVO> comment = postService.getCommentById(postId);
+		
+		if(comment != null) {
+			return ResponseUtil.buildResponse(HttpStatus.OK, "comment selected successfully", comment);
+		}else {
+			return ResponseUtil.buildResponse(HttpStatus.NO_CONTENT, "Post not found with id: " + postId, comment);
+		}
+	}
+	
+	/*
+	 * 댓글 삭제
+	 */
+	@DeleteMapping("/comment/delete")
+	public ResponseEntity<ApiResponse<String>> deleteComment(@RequestParam("commentId") Long commentId){
+		
+		try {
+			int deletedComment = postService.deleteComment(commentId);
+			if(deletedComment == 1) {
+				return ResponseUtil.buildResponse(HttpStatus.CREATED, "Comment deleted successfully", "성공");
+			}else {
+				return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "Comment delete failed", "실패");
+			}
+		}catch(Exception e) {
+			logger.error(e.getMessage());
+			return ResponseUtil.buildResponse(HttpStatus.BAD_REQUEST, "Comment delete failed", e.getMessage());
+		}
+	}
+	
 	
 }

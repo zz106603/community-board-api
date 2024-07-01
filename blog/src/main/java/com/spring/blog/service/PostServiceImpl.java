@@ -293,4 +293,39 @@ public class PostServiceImpl implements PostService{
 		}
 	}
 	
+	/*
+	 * 댓글 조회
+	 */
+	@Override
+	public List<CommentVO> getCommentById(Long id) {
+		
+		try {
+			List<CommentVO> comments = commentMapper.findById(id);
+			return comments;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return null;
+		}
+	}
+	
+	/*
+	 * 댓글 삭제
+	 */
+	@Override
+	public int deleteComment(Long commentId) {
+		try {
+			CommentVO comment = new CommentVO();
+			comment.setId(commentId);
+			comment.setDeleteDate(LocalDateTime.now());
+			comment.setDeleteYn("Y");
+			int res = commentMapper.deleteComment(comment);
+			return res;
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+			return 0;
+		}
+	}
+	
 }

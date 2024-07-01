@@ -1,5 +1,7 @@
 package com.spring.blog.service;
 
+import java.util.List;
+
 import com.spring.blog.dto.SearchDTO;
 import com.spring.blog.util.PagingResponse;
 import com.spring.blog.vo.CommentVO;
@@ -40,6 +42,8 @@ public interface PostService{
 	 * 댓글
 	 */
 	public int createComment(CommentVO comment);
+	public List<CommentVO> getCommentById(Long id);
+	public int deleteComment(Long commentId);
 
 	
 

@@ -26,10 +26,10 @@ public interface PostMapper {
 
 	int updateSelectCount(Long id);
 
+	/*
+	 * 추천
+	 */
 	int updateRecomCount(Long id);
 	int deleteRecomCount(Long id);
-
-	int createComment(CommentVO comment);
-
 	
 }

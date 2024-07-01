@@ -13,8 +13,11 @@ import com.spring.blog.vo.RecommendVO;
 @Mapper
 public interface CommentMapper {
 
-	int createComment(CommentVO comment);
+	List<CommentVO> findById(Long id);
 
+	int createComment(CommentVO comment);
+	
+	int deleteComment(CommentVO comment);
 
 
 	

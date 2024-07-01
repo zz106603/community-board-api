@@ -9,4 +9,37 @@
 		VALUES (#{userId}, #{postId}, #{comment}, #{commentDate}, #{deleteYn}, #{deleteDate})
 	</insert>
 
+	<!--댓글 조회-->
+    <resultMap id="commentResultMap" type="CommentVO">
+	    <id property="id" column="id" />
+	    <result property="userId" column="user_id" />
+	    <result property="postId" column="post_id" />
+	    <result property="comment" column="comment" />
+	    <result property="commentDate" column="comment_date" />
+	    <result property="deleteDate" column="delete_date" />
+	    <result property="deleteYn" column="delete_yn" />
+	</resultMap>
+
+    <select id="findById" resultMap="commentResultMap" parameterType="java.lang.Long">
+		SELECT 
+			*
+		FROM 
+			comment
+		WHERE
+			delete_yn = 'N'
+		AND
+			post_id = #{id}
+		ORDER BY
+			comment_date ASC
+    </select>
+    
+    <!-- 포스트 삭제 -->
+	<delete id="deleteComment" parameterType="com.spring.blog.vo.CommentVO">
+		UPDATE comment
+	    SET 
+	    	delete_yn = #{deleteYn}, 
+	    	delete_date = #{deleteDate}
+	    WHERE id = #{id}
+    </delete>
+
 </mapper>
