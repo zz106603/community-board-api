@@ -11,6 +11,9 @@ java {
 	sourceCompatibility = '17'
 }
 
+//프로젝트 단위 변수 설정
+def profile = (!project.hasProperty('profile') || !profile) ? 'local' : profile
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -43,18 +46,24 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.6'
 	
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+tasks.named('bootRun') {
+    args = ["--spring.profiles.active=${profile}"]
 }
 
-//프로젝트 단위 변수 설정
-def profile = (!project.hasProperty('profile') || !profile) ? 'local' : profile
+tasks.named('test') {
+	useJUnitPlatform()
+	systemProperty 'spring.profiles.active', profile
+}
+
+// 중복 파일 처리 전략 설정
+tasks.named('processResources') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
 
 sourceSets {
 	main {
@@ -62,10 +71,4 @@ sourceSets {
 			srcDirs "src/main/resources", "src/main/resources-env/${profile}"
 		}
 	}
-}
-
-bootRun {
-    if (project.hasProperty('profile')) {
-        args = ["--spring.profiles.active=${profile}"]
-    }
 }
