@@ -63,3 +63,9 @@ sourceSets {
 		}
 	}
 }
+
+bootRun {
+    if (project.hasProperty('profile')) {
+        args = ["--spring.profiles.active=${profile}"]
+    }
+}
