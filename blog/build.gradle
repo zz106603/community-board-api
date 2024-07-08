@@ -6,13 +6,10 @@ plugins {
 
 group = 'com.spring'
 version = '0.0.1-SNAPSHOT'
-
-java {
-	sourceCompatibility = '17'
-}
+sourceCompatibility = '17'
 
 //프로젝트 단위 변수 설정
-def profile = (!project.hasProperty('profile') || !profile) ? 'local' : profile
+def profile = project.hasProperty('profile') ? project.property('profile') : 'local'
 
 configurations {
 	compileOnly {
@@ -65,6 +62,20 @@ tasks.named('processResources') {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+bootJar {
+    archiveFileName = 'app.jar'
+    manifest {
+        attributes(
+            'Main-Class': 'com.spring.blog.BlogApplication'
+        )
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+println "Profile: ${profile}"
 sourceSets {
 	main {
 		resources {
@@ -72,3 +83,4 @@ sourceSets {
 		}
 	}
 }
+sourceSets.main.resources.srcDirs.each { println "Resource dir: $it" }
