@@ -14,6 +14,8 @@ COPY src src
 # Ensure gradlew has execution permissions
 RUN chmod +x gradlew
 
+RUN ls -la
+
 # Run Gradle build
 RUN ./gradlew clean build -Pprofile=prod
 

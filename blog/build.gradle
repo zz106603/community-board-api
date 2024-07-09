@@ -36,8 +36,8 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	
-	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.32'	
-	compileOnly 'org.projectlombok:lombok'
+	implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.32'	
+	implementation 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -62,25 +62,27 @@ tasks.named('processResources') {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-bootJar {
-    archiveFileName = 'app.jar'
-    manifest {
-        attributes(
-            'Main-Class': 'com.spring.blog.BlogApplication'
-        )
-    }
-}
-
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+    options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
 }
 
 println "Profile: ${profile}"
 sourceSets {
-	main {
-		resources {
-			srcDirs "src/main/resources", "src/main/resources-env/${profile}"
-		}
-	}
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources', "src/main/resources-env/${profile}"]
+        }
+    }
 }
+
+tasks.withType(JavaCompile) {
+    outputs.upToDateWhen { false }
+}
+
+println "Profile: ${profile}"
+sourceSets.main.java.srcDirs.each { println "Java source dir: $it" }
 sourceSets.main.resources.srcDirs.each { println "Resource dir: $it" }
