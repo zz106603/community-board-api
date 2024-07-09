@@ -48,26 +48,11 @@ dependencies {
 	
 }
 
-tasks.named('bootRun') {
-    args = ["--spring.profiles.active=${profile}"]
-}
-
 tasks.named('test') {
 	useJUnitPlatform()
 	systemProperty 'spring.profiles.active', profile
 }
 
-// 중복 파일 처리 전략 설정
-tasks.named('processResources') {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-    options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
-}
-
-println "Profile: ${profile}"
 sourceSets {
     main {
         java {
@@ -79,9 +64,10 @@ sourceSets {
     }
 }
 
-tasks.withType(JavaCompile) {
-    outputs.upToDateWhen { false }
+bootRun {
+    systemProperty 'spring.profiles.active', profile
 }
+
 
 println "Profile: ${profile}"
 sourceSets.main.java.srcDirs.each { println "Java source dir: $it" }

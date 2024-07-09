@@ -14,13 +14,8 @@ COPY src src
 # Ensure gradlew has execution permissions
 RUN chmod +x gradlew
 
-RUN ls -la
-
 # Run Gradle build
 RUN ./gradlew clean build -Pprofile=prod
-
-# Debugging step: List the contents of the build/libs directory
-RUN ls -la build/libs
 
 # Production stage
 FROM bellsoft/liberica-openjdk-alpine:17
@@ -35,4 +30,4 @@ COPY --from=builder /app/build/libs/*.jar app.jar
 EXPOSE 8080
 
 # Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=prod"]
