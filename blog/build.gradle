@@ -2,6 +2,24 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.5'
 	id 'io.spring.dependency-management' version '1.1.4'
+	id 'com.google.cloud.tools.jib' version '3.2.1'
+}
+
+jib {
+    from {
+        image = 'openjdk:17.0.2-slim'
+    }
+    to {
+        image = 'docker.io/yunhwan95/board'
+        tags = ['1.0.0']
+    }
+    container {
+        jvmFlags = [
+        			'-Dspring.profiles.active=prod',
+        			'-Dfile.encoding=UTF-8',
+        ]
+        //jvmFlags = ["-Xms128m", "-Xmx128m"]
+    }
 }
 
 group = 'com.spring'
