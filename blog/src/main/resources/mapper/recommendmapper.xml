@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.spring.blog.mapper.RecommendMapper">
+<mapper namespace="com.spring.blog.post.mapper.RecommendMapper">
     
     <!--추천 사용자 정보 등록-->
-    <insert id="updateRecomUserInfo" parameterType="com.spring.blog.vo.RecommendVO">
+    <insert id="updateRecomUserInfo" parameterType="com.spring.blog.post.vo.RecommendVO">
 		INSERT INTO recommend (user_id, post_id, recommend_date, delete_yn, delete_date)
 		VALUES (#{userId}, #{postId}, #{recommendDate}, #{deleteYn}, #{deleteDate})
 	</insert>
 	
 	<!-- 추천 사용자 정보 삭제 -->
-	<update id="deleteRecomUserInfo" parameterType="com.spring.blog.vo.RecommendVO">
+	<update id="deleteRecomUserInfo" parameterType="com.spring.blog.post.vo.RecommendVO">
 	    UPDATE recommend
 	    SET 
 	    	delete_yn = #{deleteYn},
@@ -24,7 +24,7 @@
 	</update>
 	
 	<!--추천 사용자 정보 조회-->
-	<select id="findByUserIdAndPostId" parameterType="com.spring.blog.vo.RecommendVO" resultType="com.spring.blog.vo.RecommendVO">
+	<select id="findByUserIdAndPostId" parameterType="com.spring.blog.post.vo.RecommendVO" resultType="com.spring.blog.post.vo.RecommendVO">
 		SELECT 
 			*
 		FROM 

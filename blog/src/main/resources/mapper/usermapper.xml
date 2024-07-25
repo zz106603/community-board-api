@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.spring.blog.mapper.UserMapper">
+<mapper namespace="com.spring.blog.user.mapper.UserMapper">
 
 	<!--사용자 등록-->
-    <insert id="createUser" parameterType="com.spring.blog.vo.UserVO">
+    <insert id="createUser" parameterType="com.spring.blog.user.vo.UserVO">
 		INSERT INTO users 
 			(login_id, 
 			password, 
@@ -32,7 +32,7 @@
 	</insert>
 	
 	<!-- 아이디로 사용자 조회-->
-	<select id="findById" parameterType="String" resultType="com.spring.blog.vo.UserVO">
+	<select id="findById" parameterType="String" resultType="com.spring.blog.user.vo.UserVO">
 		SELECT 
 			*
 		FROM 

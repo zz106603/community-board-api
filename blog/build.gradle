@@ -11,14 +11,29 @@ jib {
     }
     to {
         image = 'docker.io/yunhwan95/board'
-        tags = ['1.0.0']
+        tags = ['1.0.6']
     }
     container {
-        jvmFlags = [
-        			'-Dspring.profiles.active=prod',
-        			'-Dfile.encoding=UTF-8',
-        ]
+    	entrypoint = ['java', '-Dspring.profiles.active=prod', '-jar', 'blog-0.0.1-SNAPSHOT.jar']
+        ports = ['8080']
+        environment = [SPRING_OUTPUT_ANSI_ENABLED: "ALWAYS"]
+        labels = [Iversion: project.version, name: project.name, group: project.group]
+        format = 'Docker'
+        //jvmFlags = [
+        //			'-Dspring.profiles.active=prod',
+        //			'-Dfile.encoding=UTF-8',
+        //]
+        //environment = [
+        //    'SPRING_PROFILES_ACTIVE': 'prod'
+        //]
         //jvmFlags = ["-Xms128m", "-Xmx128m"]
+    }
+    extraDirectories {
+        paths { 
+            path {
+                from = file('build/libs') 
+            }
+        }
     }
 }
 
@@ -53,6 +68,8 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '3.3.2'
 	
 	implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.32'	
 	implementation 'org.projectlombok:lombok'
