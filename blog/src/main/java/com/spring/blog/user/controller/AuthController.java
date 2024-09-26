@@ -38,7 +38,12 @@ public class AuthController {
 	
 	@Autowired
 	private PrincipalService principalService;
-	
+
+	@GetMapping("/tt")
+	public void test(){
+		logger.info(String.valueOf("test"));
+	}
+
 	/*
 	 * 사용자 회원가입
 	 * loginId, password, name, birthday, gender, email, phone

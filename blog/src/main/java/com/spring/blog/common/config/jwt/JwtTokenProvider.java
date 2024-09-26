@@ -15,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import com.spring.blog.common.security.PrincipalDetails;
@@ -84,6 +85,41 @@ public class JwtTokenProvider {
                 .refreshToken(refreshToken)
                 .loginId(loginId)
 //                .userName(userName)
+                .build();
+    }
+
+    public JwtToken createToken(OAuth2AuthenticationToken authentication) {
+        // OAuth2AuthenticationToken에서 권한 정보 가져오기
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        // 현재 시간
+        long now = (new Date()).getTime();
+
+        // Access Token 생성 (1시간 유효)
+        Date accessTokenExpiresIn = new Date(now + 3600000); // 1시간
+        String accessToken = Jwts.builder()
+                .setSubject(authentication.getName()) // 사용자 이름 설정
+                .claim("auth", authorities) // 권한 정보 설정
+                .setExpiration(accessTokenExpiresIn) // 만료 시간 설정
+                .signWith(key, SignatureAlgorithm.HS256) // 서명 알고리즘 및 비밀 키 사용
+                .compact();
+
+        // Refresh Token 생성 (1일 유효)
+        String refreshToken = Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim("auth", authorities)
+                .setExpiration(new Date(now + 86400000)) // 1일 만료
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        // JWT 토큰 정보를 담은 JwtToken 객체 생성 및 반환
+        return JwtToken.builder()
+                .grantType("Bearer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .loginId(String.valueOf(authentication.getPrincipal().getAttributes().get("email"))) // 사용자 로그인 ID 설정
                 .build();
     }
 

@@ -1,5 +1,8 @@
 package com.spring.blog.common.security;
 
+import com.spring.blog.common.config.jwt.JwtToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -11,16 +14,28 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.spring.blog.common.config.jwt.JwtAuthenticationFilter;
 import com.spring.blog.common.config.jwt.JwtTokenProvider;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig{
+
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@Autowired
+	private CustomOAuth2UserService customOAuth2UserService;
 
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
@@ -45,14 +60,15 @@ public class SecurityConfig{
 		.formLogin(AbstractHttpConfigurer::disable) // Json을 통한 로그인 진행으로 refresh 토큰 만료 전까지 토큰 인증
 		.authorizeHttpRequests((authorize) -> authorize
 				.requestMatchers("/api/posts/**").hasRole("USER")
-				.requestMatchers("/api/auth/login", 
+				.requestMatchers("/api/auth/login",
 						"/api/auth/create",
 						"/api/auth/refresh",
-						"/login", 
+						"/login",
+						"/oauth2/authorization/google",
 						"/").permitAll()
 				.anyRequest().authenticated())
-		.formLogin(formLogin -> formLogin
-				.disable()
+//		.formLogin(formLogin -> formLogin
+//				.disable()
 //				.usernameParameter("loginId")
 //				.passwordParameter("password")
 //				.loginProcessingUrl("/login")
@@ -60,7 +76,31 @@ public class SecurityConfig{
 //				.failureHandler(failureHandler) // 커스텀 실패 핸들러 설정
 //				.permitAll()
 				//				.defaultSuccessUrl("/", false)
+//				)
+		.oauth2Login(oauth2 -> oauth2
+				.authorizationEndpoint(authorization -> authorization
+						.baseUri("/oauth2/authorization"))
+				.tokenEndpoint(tokenEndpoint -> tokenEndpoint
+						.accessTokenResponseClient(accessTokenResponseClient())
 				)
+				.userInfoEndpoint(userInfo -> userInfo
+						.userService(customOAuth2UserService)
+				)
+				.successHandler((request, response, authentication) -> {
+					// OAuth2 로그인 성공 후 JWT 발급
+					OAuth2AuthenticationToken auth = (OAuth2AuthenticationToken) authentication;
+					JwtToken jwtToken = jwtTokenProvider.createToken(auth); // JWT 발급
+
+					String accessToken = jwtToken.getAccessToken();
+					String refreshToken = jwtToken.getRefreshToken();
+					String loginId = jwtToken.getLoginId();
+
+					// React 프론트엔드로 리다이렉트하면서 토큰 전달
+					String targetUrl = "http://localhost:3000/oauth2/redirect?accessToken=" + accessToken + "&refreshToken=" + refreshToken + "&loginId=" + loginId;
+					response.sendRedirect(targetUrl);
+
+				})
+		)
 		.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
 		.logout((logout) -> logout
 				.logoutSuccessUrl("/user/login")
@@ -86,7 +126,11 @@ public class SecurityConfig{
 	public PasswordEncoder passwordEncoder(){
 		return new BCryptPasswordEncoder();
 	}
-	
 
-	
+	//OAuth 2.0 인증 흐름에서 액세스 토큰을 처리하는 클라이언트
+	@Bean
+	public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
+		return new DefaultAuthorizationCodeTokenResponseClient();
+	}
+
 }
