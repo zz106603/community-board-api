@@ -60,7 +60,8 @@ dependencies {
 	//implementation 'org.springframework.security:spring-security-crypto'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'
-	
+
+	// Swagger UI
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
 	
 	implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'

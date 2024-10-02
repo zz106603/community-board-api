@@ -59,24 +59,18 @@ public class SecurityConfig{
 		.httpBasic(AbstractHttpConfigurer::disable) // Json을 통한 로그인 진행으로 refresh 토큰 만료 전까지 토큰 인증
 		.formLogin(AbstractHttpConfigurer::disable) // Json을 통한 로그인 진행으로 refresh 토큰 만료 전까지 토큰 인증
 		.authorizeHttpRequests((authorize) -> authorize
-				.requestMatchers("/api/posts/**").hasRole("USER")
-				.requestMatchers("/api/auth/login",
+				.requestMatchers(
+						"/api/auth/login",
 						"/api/auth/create",
 						"/api/auth/refresh",
 						"/login",
 						"/oauth2/authorization/google",
+						"/swagger-ui/**",
+						"/v3/api-docs/**",
 						"/").permitAll()
-				.anyRequest().authenticated())
-//		.formLogin(formLogin -> formLogin
-//				.disable()
-//				.usernameParameter("loginId")
-//				.passwordParameter("password")
-//				.loginProcessingUrl("/login")
-//				.successHandler(successHandler) // 커스텀 성공 핸들러 설정
-//				.failureHandler(failureHandler) // 커스텀 실패 핸들러 설정
-//				.permitAll()
-				//				.defaultSuccessUrl("/", false)
-//				)
+				.requestMatchers("/api/posts/**").hasRole("USER")
+				.anyRequest().authenticated()
+		)
 		.oauth2Login(oauth2 -> oauth2
 				.authorizationEndpoint(authorization -> authorization
 						.baseUri("/oauth2/authorization"))
@@ -108,6 +102,16 @@ public class SecurityConfig{
 				.permitAll())
 		.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//		.formLogin(formLogin -> formLogin
+//				.disable()
+//				.usernameParameter("loginId")
+//				.passwordParameter("password")
+//				.loginProcessingUrl("/login")
+//				.successHandler(successHandler) // 커스텀 성공 핸들러 설정
+//				.failureHandler(failureHandler) // 커스텀 실패 핸들러 설정
+//				.permitAll()
+				//				.defaultSuccessUrl("/", false)
+//				)
 		);
 		
 		return http.build();

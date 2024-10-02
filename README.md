@@ -42,6 +42,9 @@
 ### 2024-09-26
 - OAuth 2.0(구글) 연동
 
+### 2024-10-02
+- Swagger 2.6 적용(API 명세서 업데이트)
+
 *********
 로그인 시 username Null 이슈 해결 필요
 예외 처리 방안을 다시 
@@ -49,6 +52,9 @@
 - 에러 발생시에는 BaseException으로 핸들러 추가?수정
 
 ---
+
+![스크린샷 2024-10-02 164536](https://github.com/user-attachments/assets/87a90686-aa52-492e-baa9-31e6f4277d9b)
+![스크린샷 2024-10-02 164542](https://github.com/user-attachments/assets/9081df6a-4a22-4026-a7a9-6aadd86619e5)
 
 ## 포스트 API
 

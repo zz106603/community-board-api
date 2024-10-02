@@ -25,13 +25,20 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 	}
 
 	// permitAll()로 설정된 엔드포인트인지 확인하는 메서드
+	// 이미 SecurityConfig에서 permitAll을 설정하기 때문에 사용하지 않음
 	private boolean isPermitAllEndpoint(String requestURI) {
 	    // 허용된 경로를 지정하고, requestURI와 일치하는지 확인
-	    return Arrays.asList("/api/auth/login", 
-	    		"/api/auth/create", 
-	    		"/api/auth/refresh",
-	    		"/login", 
-	    		"/").contains(requestURI);
+//	    return Arrays.asList("/api/auth/login",
+//	    		"/api/auth/create",
+//	    		"/api/auth/refresh",
+//	    		"/login",
+//				"/swagger-ui/index.html",
+//	    		"/").contains(requestURI);
+		return requestURI.startsWith("/api/auth") ||
+				requestURI.equals("/") ||
+				requestURI.startsWith("/swagger-ui") ||
+				requestURI.startsWith("/v3/api-docs") ||
+				requestURI.startsWith("/oauth2");
 	}
 	
 	@Override
