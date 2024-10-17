@@ -1,13 +1,5 @@
 package com.spring.blog.common.config.jwt;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
-import org.springframework.web.filter.GenericFilterBean;
-
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,6 +7,12 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.GenericFilterBean;
+
+import java.io.IOException;
 
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
@@ -36,6 +34,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 //	    		"/").contains(requestURI);
 		return requestURI.startsWith("/api/auth") ||
 				requestURI.equals("/") ||
+				requestURI.startsWith("/") ||
 				requestURI.startsWith("/swagger-ui") ||
 				requestURI.startsWith("/v3/api-docs") ||
 				requestURI.startsWith("/oauth2");
