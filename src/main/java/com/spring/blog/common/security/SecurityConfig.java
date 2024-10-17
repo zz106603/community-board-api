@@ -1,6 +1,8 @@
 package com.spring.blog.common.security;
 
+import com.spring.blog.common.config.jwt.JwtAuthenticationFilter;
 import com.spring.blog.common.config.jwt.JwtToken;
+import com.spring.blog.common.config.jwt.JwtTokenProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +22,6 @@ import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResp
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.spring.blog.common.config.jwt.JwtAuthenticationFilter;
-import com.spring.blog.common.config.jwt.JwtTokenProvider;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @Configuration
@@ -68,7 +64,8 @@ public class SecurityConfig{
 						"/swagger-ui/**",
 						"/v3/api-docs/**",
 						"/").permitAll()
-				.requestMatchers("/api/posts/**").hasRole("USER")
+//				.requestMatchers("/api/posts/**").hasRole("USER")
+				.requestMatchers("/api/posts/**").permitAll()
 				.anyRequest().authenticated()
 		)
 		.oauth2Login(oauth2 -> oauth2

@@ -107,4 +107,9 @@
 	    WHERE id = #{id}
 	</update>
 
+	<!--테스트용-->
+	<delete id="deleteAll">
+		DELETE FROM post;
+	</delete>
+
 </mapper>

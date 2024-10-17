@@ -1,37 +1,22 @@
 package com.spring.blog.post.controller;
 
 
-import java.util.List;
-
 import com.spring.blog.common.model.response.SwaggerCommonResponse;
+import com.spring.blog.common.util.PagingResponse;
+import com.spring.blog.post.dto.SearchDTO;
+import com.spring.blog.post.service.PostService;
+import com.spring.blog.post.vo.CommentVO;
+import com.spring.blog.post.vo.PostVO;
+import com.spring.blog.post.vo.RecommendVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.spring.blog.common.util.ApiResponse;
-import com.spring.blog.common.util.PagingResponse;
-import com.spring.blog.common.util.ResponseUtil;
-import com.spring.blog.post.dto.SearchDTO;
-import com.spring.blog.post.service.PostService;
-import com.spring.blog.post.vo.CommentVO;
-import com.spring.blog.post.vo.PostVO;
-import com.spring.blog.post.vo.RecommendVO;
+import java.util.List;
 
 @Tag(name = "Post", description = "Post 관련 API")
 @RestController
@@ -88,6 +73,7 @@ public class PostController {
 	@SwaggerCommonResponse
 	public String createPost(@RequestBody PostVO post){
 		postService.createPost(post);
+		//201응답으로 바꾸는거 필요 -> 프론트도 수정해야 함
 		return "SAVE POST COMPLETE";
 	}
 
