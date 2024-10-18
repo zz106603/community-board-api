@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
 		// 로그에 에러 기록
         logger.error("Error occurred: {}", ex.getDetailMessage());
         
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(response, ex.getStatus());
 	}
 
 }

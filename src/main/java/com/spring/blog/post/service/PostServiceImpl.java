@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,7 +66,7 @@ public class PostServiceImpl implements PostService{
 			throw e;
 		}catch(Exception e) {
 			logger.error(e.getMessage(), e);
-			throw new BaseException("An unexpected error occurred while fetching the post with id: " + id);
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred while fetching the post with id: " + id);
 		}
 	}
 
@@ -99,7 +100,7 @@ public class PostServiceImpl implements PostService{
 			throw e;
 		} catch (Exception e) {
 			logger.error("An unexpected error occurred", e);
-			throw new BaseException("An unexpected error occurred");
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
 		}
 
 	}
@@ -146,7 +147,7 @@ public class PostServiceImpl implements PostService{
 		try {
 			return postMapper.findByAllCount(params);
 		} catch (Exception e) {
-			throw new BaseException("Failed to retrieve post count");
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve post count");
 		}
 	}
 
@@ -169,30 +170,29 @@ public class PostServiceImpl implements PostService{
 			vaildationPost(post); //유효성 검사
 			postMapper.createPost(post);
 		}catch (IllegalArgumentException e) {
-			throw new BaseException("Invalid post data: " + e.getMessage());
+			throw new BaseException(HttpStatus.BAD_REQUEST,"Invalid post data: " + e.getMessage());
 		}catch (DataAccessException e) {
-			throw new BaseException("Database access error: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR,"Database access error: " + e.getMessage());
 		}catch(BaseException e) {
 			throw e;
 		}catch (Exception e) {
-			throw new BaseException("Unexpected error occurred: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR,"Unexpected error occurred: " + e.getMessage());
 		}
 	}
 
 	//포스트 유효성 검사
 	private void vaildationPost(PostVO post) {
 		if (post.getTitle() == null || post.getTitle().isEmpty()) {
-			logger.error("Post title cannot be null or empty");
-			throw new BaseException("Post title cannot be null or empty");
+			throw new BaseException(HttpStatus.BAD_REQUEST, "Post title cannot be null or empty");
 		}
 		if (post.getWriter() == null || post.getWriter().isEmpty()) {
-			throw new BaseException("Post writer cannot be null or empty");
+			throw new BaseException(HttpStatus.BAD_REQUEST, "Post writer cannot be null or empty");
 		}
 		if (post.getCategory() == null || post.getCategory().isEmpty()) {
-			throw new BaseException("Post title cannot be null or empty");
+			throw new BaseException(HttpStatus.BAD_REQUEST, "Post category cannot be null or empty");
 		}
 		if (post.getContent() == null || post.getContent().isEmpty()) {
-			throw new BaseException("Post content cannot be null or empty");
+			throw new BaseException(HttpStatus.BAD_REQUEST, "Post content cannot be null or empty");
 		}
 	}
 
@@ -206,15 +206,18 @@ public class PostServiceImpl implements PostService{
 		try {
 			post.setUpdateDate(LocalDateTime.now());
 			vaildationPost(post); //유효성 검사
-			postMapper.updatePost(post);
+			int affectedRows = postMapper.updatePost(post);
+			if (affectedRows == 0) {
+				throw new PostNotFoundException(post.getId());
+			}
 		}catch (IllegalArgumentException e) {
-			throw new BaseException("Invalid post data: " + e.getMessage());
+			throw new BaseException(HttpStatus.BAD_REQUEST, "Invalid post data: " + e.getMessage());
 		}catch (DataAccessException e) {
-			throw new BaseException("Database access error: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR,"Database access error: " + e.getMessage());
 		}catch(BaseException e) {
 			throw e;
 		}catch (Exception e) {
-			throw new BaseException("Unexpected error occurred: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred: " + e.getMessage());
 		}
 	}
 
@@ -232,15 +235,18 @@ public class PostServiceImpl implements PostService{
 			post.setDeleteDate(LocalDateTime.now());
 			post.setDeleteYn("Y");
 
-			postMapper.deletePost(post);
+			int affectedRows = postMapper.deletePost(post);
+			if(affectedRows == 0){
+				throw new PostNotFoundException(post.getId());
+			}
 		}catch (IllegalArgumentException e) {
-			throw new BaseException("Invalid post data: " + e.getMessage());
+			throw new BaseException(HttpStatus.BAD_REQUEST, "Invalid post data: " + e.getMessage());
 		}catch (DataAccessException e) {
-			throw new BaseException("Database access error: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Database access error: " + e.getMessage());
 		}catch(BaseException e) {
 			throw e;
 		}catch (Exception e) {
-			throw new BaseException("Unexpected error occurred: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred: " + e.getMessage());
 		}
 	}
 
@@ -279,14 +285,14 @@ public class PostServiceImpl implements PostService{
 			}
 
 			if (recomPost != 1 || recomPostUserInfo != 1) {
-				throw new BaseException("Post recommendation failed");
+				throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Post recommendation failed");
 			}
 		} catch (DataAccessException e) {
-			throw new BaseException("Database access error: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Database access error: " + e.getMessage());
 		} catch (BaseException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new BaseException("Unexpected error occurred: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred: " + e.getMessage());
 		}
 	}
 
@@ -299,7 +305,7 @@ public class PostServiceImpl implements PostService{
 		try {
 			return postMapper.updateRecomCount(postId);
 		} catch (DataAccessException e) {
-			throw new BaseException("Failed to increase recommendation count");
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to increase recommendation count");
 		}
 	}
 
@@ -312,7 +318,7 @@ public class PostServiceImpl implements PostService{
 		try {
 			return postMapper.deleteRecomCount(postId);
 		} catch (DataAccessException e) {
-			throw new BaseException("Failed to decrease recommendation count");
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to decrease recommendation count");
 		}
 	}
 
@@ -327,7 +333,7 @@ public class PostServiceImpl implements PostService{
 			recommend.setDeleteYn("N");
 			return recommendMapper.updateRecomUserInfo(recommend);
 		} catch (DataAccessException e) {
-			throw new BaseException("Failed to update recommendation user info");
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update recommendation user info");
 		}
 	}
 
@@ -342,7 +348,7 @@ public class PostServiceImpl implements PostService{
 			recommend.setDeleteYn("Y");
 			return recommendMapper.deleteRecomUserInfo(recommend);
 		} catch (DataAccessException e) {
-			throw new BaseException("Failed to delete recommendation user info");
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete recommendation user info");
 		}
 	}
 
@@ -363,11 +369,11 @@ public class PostServiceImpl implements PostService{
 	        }
 	        return RecommendVO.from(recom);
 	    } catch (DataAccessException e) {
-	        throw new BaseException("Database access error: " + e.getMessage());
+	        throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Database access error: " + e.getMessage());
 	    } catch (BaseException e) {
 	        throw e;
 	    } catch (Exception e) {
-	        throw new BaseException("Unexpected error occurred: " + e.getMessage());
+	        throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred: " + e.getMessage());
 	    }
 	}
 
@@ -384,13 +390,13 @@ public class PostServiceImpl implements PostService{
 			
 			commentMapper.createComment(comment);
 		}catch (IllegalArgumentException e) {
-			throw new BaseException("Invalid comment data: " + e.getMessage());
+			throw new BaseException(HttpStatus.BAD_REQUEST, "Invalid comment data: " + e.getMessage());
 		}catch (DataAccessException e) {
-			throw new BaseException("Database access error: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Database access error: " + e.getMessage());
 		}catch(BaseException e) {
 			throw e;
 		}catch (Exception e) {
-			throw new BaseException("Unexpected error occurred: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred: " + e.getMessage());
 		}
 	}
 
@@ -404,11 +410,11 @@ public class PostServiceImpl implements PostService{
 		try {
 			return commentMapper.findById(id);
 		} catch (DataAccessException e) {
-	        throw new BaseException("Database access error: " + e.getMessage());
+	        throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Database access error: " + e.getMessage());
 	    } catch (BaseException e) {
 	        throw e;
 	    } catch (Exception e) {
-	        throw new BaseException("Unexpected error occurred: " + e.getMessage());
+	        throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred: " + e.getMessage());
 	    }
 	}
 
@@ -424,13 +430,13 @@ public class PostServiceImpl implements PostService{
 			comment.setDeleteYn("Y");
 			commentMapper.deleteComment(comment);
 		}catch (IllegalArgumentException e) {
-			throw new BaseException("Invalid post data: " + e.getMessage());
+			throw new BaseException(HttpStatus.BAD_REQUEST, "Invalid post data: " + e.getMessage());
 		}catch (DataAccessException e) {
-			throw new BaseException("Database access error: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Database access error: " + e.getMessage());
 		}catch(BaseException e) {
 			throw e;
 		}catch (Exception e) {
-			throw new BaseException("Unexpected error occurred: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred: " + e.getMessage());
 		}
 	}
 
