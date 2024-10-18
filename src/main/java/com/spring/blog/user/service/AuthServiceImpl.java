@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
@@ -60,13 +61,13 @@ public class AuthServiceImpl implements AuthService{
 
 			userMapper.createUser(user);
 		}catch (IllegalArgumentException e) {
-			throw new BaseException("Password encoding failed: " + e.getMessage());
+			throw new BaseException(HttpStatus.BAD_REQUEST, "Password encoding failed: " + e.getMessage());
 		}catch (DataAccessException e) {
-			throw new BaseException("Database operation failed: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Database operation failed: " + e.getMessage());
 		}catch (BaseException e) {
 			throw e;
 		}catch (Exception e) {	        
-			throw new BaseException("An unexpected error occurred: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: " + e.getMessage());
 		}
 	}
 
@@ -80,11 +81,11 @@ public class AuthServiceImpl implements AuthService{
 			UserVO user = userMapper.findById(loginId);
 			return Optional.ofNullable(user);
 		}catch (DataAccessException e) {
-			throw new BaseException("Database operation failed: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Database operation failed: " + e.getMessage());
 		}catch(BaseException e) {
 			throw e;
 		}catch (Exception e) {
-			throw new BaseException("An unexpected error occurred: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: " + e.getMessage());
 		}
 	}
 
@@ -109,20 +110,20 @@ public class AuthServiceImpl implements AuthService{
 			return jwtToken;
 		} catch (BadCredentialsException e) {
 			// 잘못된 자격 증명 (비밀번호 오류 등) 예외 처리
-			throw new BaseException("Invalid username or password: " + e.getMessage());
+			throw new BaseException(HttpStatus.UNAUTHORIZED, "Invalid username or password: " + e.getMessage());
 		} catch (DisabledException e) {
 			// 사용자가 비활성화된 경우 예외 처리
-			throw new BaseException("User is disabled: " + e.getMessage());
+			throw new BaseException(HttpStatus.FORBIDDEN, "User is disabled: " + e.getMessage());
 		} catch (LockedException e) {
 			// 사용자가 잠긴 경우 예외 처리
-			throw new BaseException("User account is locked: " + e.getMessage());
+			throw new BaseException(HttpStatus.LOCKED, "User account is locked: " + e.getMessage());
 		} catch (AuthenticationException e) {
 			// 기타 인증 관련 예외 처리
-			throw new BaseException("Authentication failed: " + e.getMessage());
+			throw new BaseException(HttpStatus.UNAUTHORIZED, "Authentication failed: " + e.getMessage());
 		} catch(BaseException e) {
 			throw e;
 		}catch(Exception e) {
-			throw new BaseException("An unexpected error occurred: " + e.getMessage());
+			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: " + e.getMessage());
 		}
 	}
 

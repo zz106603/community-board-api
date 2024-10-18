@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -62,13 +63,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     userMapper.createUser(user);
                     userOne = user;
                 }catch (IllegalArgumentException e) {
-                    throw new BaseException("Password encoding failed: " + e.getMessage());
+                    throw new BaseException(HttpStatus.BAD_REQUEST, "Password encoding failed: " + e.getMessage());
                 }catch (DataAccessException e) {
-                    throw new BaseException("Database operation failed: " + e.getMessage());
+                    throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Database operation failed: " + e.getMessage());
                 }catch (BaseException e) {
                     throw e;
                 }catch (Exception e) {
-                    throw new BaseException("An unexpected error occurred: " + e.getMessage());
+                    throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: " + e.getMessage());
                 }
             }else{
                 logger.info("이미 가입이 완료된 사용자입니다.");
@@ -78,11 +79,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             return new CustomOAuth2User(oAuth2User, userOne.getRoles());
 
         }catch (DataAccessException e) {
-            throw new BaseException("Database operation failed: " + e.getMessage());
+            throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "Database operation failed: " + e.getMessage());
         }catch(BaseException e) {
             throw e;
         }catch (Exception e) {
-            throw new BaseException("An unexpected error occurred: " + e.getMessage());
+            throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: " + e.getMessage());
         }
 
     }

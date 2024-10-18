@@ -57,7 +57,7 @@
     </select>
     
     <!--포스트 등록-->
-    <insert id="createPost" parameterType="com.spring.blog.post.vo.PostVO">
+    <insert id="createPost" parameterType="com.spring.blog.post.vo.PostVO" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO post (title, content, writer, category, write_date, update_date, delete_yn, select_count, recom_count)
 		VALUES (#{title}, #{content}, #{writer}, #{category}, #{writeDate}, #{updateDate}, #{deleteYn}, #{selectCount}, #{recomCount})
 	</insert>
