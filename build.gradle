@@ -55,6 +55,8 @@ repositories {
 }
 
 dependencies {
+	// Dotenv(환경 변수 숨김)
+	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	//implementation 'org.springframework.security:spring-security-crypto'

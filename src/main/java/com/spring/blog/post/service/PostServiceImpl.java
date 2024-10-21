@@ -48,21 +48,18 @@ public class PostServiceImpl implements PostService{
 	public PostVO getPostById(Long id, boolean incrementViewCount){
 
 		try {
-			//조회 수 증가
-			if(incrementViewCount) {
-				increaseViewCount(id);
-			}
-
 			PostVO post = postMapper.findById(id);
 			if(post == null) {
 				throw new PostNotFoundException(id);
+			}else{
+				//조회 수 증가
+				if(incrementViewCount) {
+					increaseViewCount(id);
+				}
 			}
 
-			return PostVO.from(post);	
-
+			return PostVO.from(post);
 		}catch(PostNotFoundException e) {
-			throw e;
-		}catch(ViewCountIncrementException e) {
 			throw e;
 		}catch(Exception e) {
 			logger.error(e.getMessage(), e);
@@ -84,7 +81,15 @@ public class PostServiceImpl implements PostService{
 			// 조건에 해당하는 데이터가 없는 경우, 응답 데이터에 비어있는 리스트와 null을 담아 반환
 			long count = getPostByAllCount(params);
 			if(count < 1) {
-				return new PagingResponse<>(Collections.emptyList(), null);
+				Pagination emptyPagination = new Pagination();
+				emptyPagination.setTotalRecordCount(0);
+				emptyPagination.setTotalPageCount(0);
+				emptyPagination.setStartPage(0);
+				emptyPagination.setEndPage(0);
+				emptyPagination.setLimitStart(0);
+				emptyPagination.setExistPrevPage(false);
+				emptyPagination.setExistNextPage(false);
+				return new PagingResponse<>(Collections.emptyList(), emptyPagination);
 			}
 
 			// Pagination 객체를 생성해서 페이지 정보 계산 후 SearchDto 타입의 객체인 params에 계산된 페이지 정보 저장

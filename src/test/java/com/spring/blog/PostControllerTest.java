@@ -3,6 +3,8 @@ package com.spring.blog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.blog.post.mapper.PostMapper;
 import com.spring.blog.post.vo.PostVO;
+import io.github.cdimascio.dotenv.Dotenv;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -14,14 +16,25 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class PostControllerTest {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @BeforeAll
+    static void setUp() {
+        Dotenv dotenv = Dotenv.configure().load();
+
+        System.setProperty("spring.datasource.username", dotenv.get("DB_USERNAME"));
+        System.setProperty("spring.datasource.password", dotenv.get("DB_PASSWORD"));
+        System.setProperty("spring.datasource.url", dotenv.get("DB_URL"));
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -33,7 +46,7 @@ public class PostControllerTest {
     private ObjectMapper objectMapper;
 
     @BeforeEach
-    void setUp() {
+    void clearData() {
         postMapper.deleteAll();
     }
 
@@ -211,7 +224,7 @@ public class PostControllerTest {
                         .param("incrementViewCount", "true")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.detailMessage").value("Faild to increase view count for post, postId = 9999999"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.detailMessage").value("Not Found Post, postId = 9999999"));
     }
 
     /*
