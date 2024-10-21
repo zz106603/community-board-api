@@ -12,7 +12,17 @@ public class Pagination {
 	private long limitStart; //LIMIT 시작 위치
 	private boolean existPrevPage; //이전 페이지 존재 여부
 	private boolean existNextPage; //다음 페이지 존재 여부
-	
+
+	public Pagination() {
+		this.totalRecordCount = 0;
+		this.totalPageCount = 0;
+		this.startPage = 0;
+		this.endPage = 0;
+		this.limitStart = 0;
+		this.existPrevPage = false;
+		this.existNextPage = false;
+	}
+
 	public Pagination(long totalRecordCount, SearchDTO params) {
 		//총 게시글 수가 1개 이상이면
 		if(totalRecordCount > 0) {

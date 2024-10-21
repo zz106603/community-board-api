@@ -40,3 +40,5 @@ logs/
 
 ### Oauth ###
 src/main/resources/application-oauth.properties
+
+.env
