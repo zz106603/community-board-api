@@ -42,4 +42,13 @@
 			
     </select>
 
+	<select id="findByEmail" parameterType="String" resultType="com.spring.blog.user.vo.UserVO">
+		SELECT
+			*
+		FROM
+			users
+		WHERE
+			email = #{email}
+	</select>
+
 </mapper>

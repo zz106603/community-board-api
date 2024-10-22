@@ -13,12 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.web.bind.annotation.*;
 
 import com.spring.blog.common.config.jwt.JwtToken;
 import com.spring.blog.common.config.jwt.JwtTokenProvider;
@@ -75,6 +72,28 @@ public class AuthController {
 	@SwaggerCommonResponse
 	public JwtToken login (@RequestBody UserVO user){
 		return authService.signIn(user.getLoginId(), user.getPassword());
+	}
+
+	@GetMapping("/info")
+	public ResponseEntity<UserVO> getUserInfo(OAuth2AuthenticationToken authentication) {
+		System.out.println(authentication.getPrincipal().toString());
+
+		if (authentication == null || !authentication.isAuthenticated()) {
+			return ResponseEntity.status(401).build();
+		}
+
+		// OAuth2User에서 사용자 정보 가져오기
+		OAuth2User oauth2User = authentication.getPrincipal();
+		String email = oauth2User.getAttribute("email");
+
+		// 서비스 계층을 통해 사용자 정보 조회
+		UserVO user = authService.getUserByEmail(email);
+
+		if (user != null) {
+			return ResponseEntity.ok(user);
+		} else {
+			return ResponseEntity.status(404).build(); // 사용자 정보가 없을 경우
+		}
 	}
 	
 	/*
