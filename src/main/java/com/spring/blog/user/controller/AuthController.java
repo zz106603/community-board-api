@@ -6,6 +6,8 @@ import com.spring.blog.common.model.response.SwaggerCommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,7 @@ import com.spring.blog.user.vo.UserVO;
 public class AuthController {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	
+
 	@Autowired
 	private AuthService authService;
 	
@@ -59,10 +61,25 @@ public class AuthController {
 	@PostMapping("/refresh")
 	@Operation(summary = "AccessToken 재발급", description = "AccessToken을 재발급합니다.")
 	@SwaggerCommonResponse
-    public String refreshAccessToken(@RequestBody JwtToken token) {
-        String refreshToken = token.getRefreshToken();
-    	return jwtTokenProvider.refreshAccessToken(refreshToken);
-    }
+	public String refreshAccessToken(HttpServletRequest request) {
+		// 모든 쿠키 가져오기
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if ("refreshToken".equals(cookie.getName())) {
+					String refreshToken = cookie.getValue();
+					logger.info("Retrieved refresh token from cookie: {}", refreshToken);
+					return jwtTokenProvider.refreshAccessToken(refreshToken);
+				}
+			}
+		}
+		throw new RuntimeException("Refresh token not found in cookies.");
+	}
+//    public String refreshAccessToken(@RequestBody JwtToken token) {
+//		logger.info(token.toString());
+//        String refreshToken = token.getRefreshToken();
+//    	return jwtTokenProvider.refreshAccessToken(refreshToken);
+//    }
 	
 	/*
 	 * 사용자 login
@@ -74,28 +91,6 @@ public class AuthController {
 		return authService.signIn(user.getLoginId(), user.getPassword());
 	}
 
-	@GetMapping("/info")
-	public ResponseEntity<UserVO> getUserInfo(OAuth2AuthenticationToken authentication) {
-		System.out.println(authentication.getPrincipal().toString());
-
-		if (authentication == null || !authentication.isAuthenticated()) {
-			return ResponseEntity.status(401).build();
-		}
-
-		// OAuth2User에서 사용자 정보 가져오기
-		OAuth2User oauth2User = authentication.getPrincipal();
-		String email = oauth2User.getAttribute("email");
-
-		// 서비스 계층을 통해 사용자 정보 조회
-		UserVO user = authService.getUserByEmail(email);
-
-		if (user != null) {
-			return ResponseEntity.ok(user);
-		} else {
-			return ResponseEntity.status(404).build(); // 사용자 정보가 없을 경우
-		}
-	}
-	
 	/*
 	 * 사용자 조회 TEST
 	 * loginId

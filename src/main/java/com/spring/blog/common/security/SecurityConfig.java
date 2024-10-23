@@ -4,6 +4,7 @@ import com.spring.blog.common.config.jwt.JwtAuthenticationFilter;
 import com.spring.blog.common.config.jwt.JwtToken;
 import com.spring.blog.common.config.jwt.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,7 @@ public class SecurityConfig{
 			.httpBasic(AbstractHttpConfigurer::disable) // Json을 통한 로그인 진행으로 refresh 토큰 만료 전까지 토큰 인증
 			.formLogin(AbstractHttpConfigurer::disable) // Json을 통한 로그인 진행으로 refresh 토큰 만료 전까지 토큰 인증
 			.cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 활성화
+//			.cors(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests((authorize) -> authorize
 			.requestMatchers(
 					"/api/auth/login",
@@ -123,6 +125,12 @@ public class SecurityConfig{
 	//					response.sendRedirect(targetUrl);
 					})
 			)
+			.exceptionHandling(exceptionHandling -> exceptionHandling
+					.authenticationEntryPoint((request, response, authException) -> {
+						// 인증되지 않은 요청에 대해 401 응답
+						response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+					})
+			)
 			.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
 			.logout((logout) -> logout
 					.logoutSuccessUrl("/user/login")
@@ -140,6 +148,7 @@ public class SecurityConfig{
 	//				.permitAll()
 					//				.defaultSuccessUrl("/", false)
 	//				)
+
 			);
 		
 		return http.build();

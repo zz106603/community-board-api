@@ -131,10 +131,10 @@ public class AuthServiceImpl implements AuthService{
 
 	@Transactional(readOnly = true)
 	@Override
-	public UserVO getUserByEmail(String email) {
-		UserVO user = userMapper.findByEmail(email);
+	public UserVO getUserByLoginId(String loginId) {
+		UserVO user = userMapper.findByLoginId(loginId);
 		if (user == null) {
-			throw new UserNotFoundException(email);
+			throw new UserNotFoundException(loginId);
 		}
 		return user;
 	}

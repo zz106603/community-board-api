@@ -2,7 +2,9 @@ package com.spring.blog.common.config.jwt;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.ToString;
 
+@ToString
 public class JwtToken {
 	private String grantType;
     private String accessToken;

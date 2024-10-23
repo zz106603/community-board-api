@@ -29,7 +29,10 @@ public class PrincipalDetails implements UserDetails {
         return collection;
     }
 
-    
+    public String getEmail() {
+        return user.getEmail();
+    }
+
     public String getName() {
         return user.getName();
     }

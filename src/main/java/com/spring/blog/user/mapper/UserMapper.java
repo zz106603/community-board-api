@@ -16,7 +16,7 @@ public interface UserMapper {
 
 	UserVO findById(String loginId);
 
-	UserVO findByEmail(@Param("email") String email);
+	UserVO findByLoginId(@Param("loginId") String loginId);
 
 	
 }
