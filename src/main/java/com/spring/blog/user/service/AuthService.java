@@ -16,5 +16,7 @@ public interface AuthService{
 
 	JwtToken signIn(String username, String password);
 
+	UserVO getUserByLoginId(String loginId);
+
 
 }

@@ -6,6 +6,8 @@ import com.spring.blog.common.model.response.SwaggerCommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.web.bind.annotation.*;
 
 import com.spring.blog.common.config.jwt.JwtToken;
 import com.spring.blog.common.config.jwt.JwtTokenProvider;
@@ -34,7 +33,7 @@ import com.spring.blog.user.vo.UserVO;
 public class AuthController {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	
+
 	@Autowired
 	private AuthService authService;
 	
@@ -62,10 +61,25 @@ public class AuthController {
 	@PostMapping("/refresh")
 	@Operation(summary = "AccessToken 재발급", description = "AccessToken을 재발급합니다.")
 	@SwaggerCommonResponse
-    public String refreshAccessToken(@RequestBody JwtToken token) {
-        String refreshToken = token.getRefreshToken();
-    	return jwtTokenProvider.refreshAccessToken(refreshToken);
-    }
+	public String refreshAccessToken(HttpServletRequest request) {
+		// 모든 쿠키 가져오기
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if ("refreshToken".equals(cookie.getName())) {
+					String refreshToken = cookie.getValue();
+					logger.info("Retrieved refresh token from cookie: {}", refreshToken);
+					return jwtTokenProvider.refreshAccessToken(refreshToken);
+				}
+			}
+		}
+		throw new RuntimeException("Refresh token not found in cookies.");
+	}
+//    public String refreshAccessToken(@RequestBody JwtToken token) {
+//		logger.info(token.toString());
+//        String refreshToken = token.getRefreshToken();
+//    	return jwtTokenProvider.refreshAccessToken(refreshToken);
+//    }
 	
 	/*
 	 * 사용자 login
@@ -76,7 +90,7 @@ public class AuthController {
 	public JwtToken login (@RequestBody UserVO user){
 		return authService.signIn(user.getLoginId(), user.getPassword());
 	}
-	
+
 	/*
 	 * 사용자 조회 TEST
 	 * loginId

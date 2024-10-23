@@ -42,4 +42,13 @@
 			
     </select>
 
+	<select id="findByLoginId" parameterType="String" resultType="com.spring.blog.user.vo.UserVO">
+		SELECT
+			*
+		FROM
+			users
+		WHERE
+			login_id = #{loginId}
+	</select>
+
 </mapper>

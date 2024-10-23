@@ -3,6 +3,7 @@ package com.spring.blog.user.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import com.spring.blog.user.exception.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import com.spring.blog.common.config.jwt.JwtTokenProvider;
 import com.spring.blog.common.exception.BaseException;
 import com.spring.blog.user.mapper.UserMapper;
 import com.spring.blog.user.vo.UserVO;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthServiceImpl implements AuthService{
@@ -125,6 +127,16 @@ public class AuthServiceImpl implements AuthService{
 		}catch(Exception e) {
 			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: " + e.getMessage());
 		}
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public UserVO getUserByLoginId(String loginId) {
+		UserVO user = userMapper.findByLoginId(loginId);
+		if (user == null) {
+			throw new UserNotFoundException(loginId);
+		}
+		return user;
 	}
 
 

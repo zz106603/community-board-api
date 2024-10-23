@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -23,18 +24,11 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 	}
 
 	// permitAll()로 설정된 엔드포인트인지 확인하는 메서드
-	// 이미 SecurityConfig에서 permitAll을 설정하기 때문에 사용하지 않음
 	private boolean isPermitAllEndpoint(String requestURI) {
 	    // 허용된 경로를 지정하고, requestURI와 일치하는지 확인
-//	    return Arrays.asList("/api/auth/login",
-//	    		"/api/auth/create",
-//	    		"/api/auth/refresh",
-//	    		"/login",
-//				"/swagger-ui/index.html",
-//	    		"/").contains(requestURI);
 		return requestURI.startsWith("/api/auth") ||
 				requestURI.equals("/") ||
-				requestURI.startsWith("/") ||
+//				requestURI.startsWith("/") ||
 				requestURI.startsWith("/swagger-ui") ||
 				requestURI.startsWith("/v3/api-docs") ||
 				requestURI.startsWith("/oauth2");
@@ -42,19 +36,21 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 	
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 	    String requestURI = httpRequest.getRequestURI();
 
-	    // permitAll()로 설정된 엔드포인트에 대해서는 JWT 검증을 수행하지 않고 다음 필터로 요청을 전달
+		// permitAll()로 설정된 엔드포인트에 대해서는 JWT 검증을 수행하지 않고 다음 필터로 요청을 전달
 	    if (isPermitAllEndpoint(requestURI)) {
-	        chain.doFilter(request, response);
-	        return;
+			logger.info("PermitAll endpoint, skipping JWT validation for URI: " + requestURI);
+			chain.doFilter(request, response);
+			logger.info("After chain.doFilter - Response Status: " + ((HttpServletResponse) response));
+			return;
 	    }
 		
 		try {
 			// 1. Request Header에서 JWT 토큰 추출
-			String token = resolveToken((HttpServletRequest) request);
+//			String token = resolveToken((HttpServletRequest) request);
+			String token = resolveToken(httpRequest);
 
 			// 토큰이 없는 경우 401 응답
             if (token == null || token.isEmpty()) {
@@ -84,10 +80,21 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 	}
 
 	// Request Header에서 토큰 정보 추출
+//	private String resolveToken(HttpServletRequest request) {
+//		String bearerToken = request.getHeader("Authorization");
+//		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
+//			return bearerToken.substring(7);
+//		}
+//		return null;
+//	}
 	private String resolveToken(HttpServletRequest request) {
-		String bearerToken = request.getHeader("Authorization");
-		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
-			return bearerToken.substring(7);
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if ("accessToken".equals(cookie.getName())) {
+					return cookie.getValue();
+				}
+			}
 		}
 		return null;
 	}
