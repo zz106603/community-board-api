@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,7 @@ public class AuthController {
 	@PostMapping("/refresh")
 	@Operation(summary = "AccessToken 재발급", description = "AccessToken을 재발급합니다.")
 	@SwaggerCommonResponse
-	public String refreshAccessToken(HttpServletRequest request) {
+	public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
 		// 모든 쿠키 가져오기
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
@@ -69,27 +70,108 @@ public class AuthController {
 				if ("refreshToken".equals(cookie.getName())) {
 					String refreshToken = cookie.getValue();
 					logger.info("Retrieved refresh token from cookie: {}", refreshToken);
-					return jwtTokenProvider.refreshAccessToken(refreshToken);
+
+					// Refresh Token 검증 및 새로운 Access Token 생성
+					try {
+						String newAccessToken = jwtTokenProvider.refreshAccessToken(refreshToken);
+
+						// 새로운 Access Token을 쿠키에 설정
+						Cookie accessTokenCookie = new Cookie("accessToken", newAccessToken);
+						accessTokenCookie.setHttpOnly(true);
+						accessTokenCookie.setSecure(false); // HTTPS 환경에서는 true로 설정
+						accessTokenCookie.setPath("/");
+						accessTokenCookie.setMaxAge(3600); // Access Token 유효 시간 설정 (1시간)
+
+						// 응답에 쿠키 추가
+						response.addCookie(accessTokenCookie);
+
+						return ResponseEntity.ok("SUCCESS");
+					} catch (Exception e) {
+						// Refresh Token 검증 실패 시
+						logger.error("Token verification failed: {}", e.getMessage());
+						return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token. Please log in again.");
+					}
 				}
 			}
 		}
-		throw new RuntimeException("Refresh token not found in cookies.");
+		// Refresh Token을 찾을 수 없을 때
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token not found. Please log in.");
 	}
-//    public String refreshAccessToken(@RequestBody JwtToken token) {
-//		logger.info(token.toString());
-//        String refreshToken = token.getRefreshToken();
-//    	return jwtTokenProvider.refreshAccessToken(refreshToken);
-//    }
-	
 	/*
 	 * 사용자 login
 	 */
 	@PostMapping("/login")
 	@Operation(summary = "사용자 로그인", description = "사용자를 로그인합니다.")
 	@SwaggerCommonResponse
-	public JwtToken login (@RequestBody UserVO user){
-		return authService.signIn(user.getLoginId(), user.getPassword());
+	public ResponseEntity<JwtToken> login (@RequestBody UserVO user, HttpServletResponse response){
+
+		JwtToken jwtToken = authService.signIn(user.getLoginId(), user.getPassword());
+
+		// 쿠키에 Access Token 설정
+		Cookie accessTokenCookie = new Cookie("accessToken", jwtToken.getAccessToken());
+		accessTokenCookie.setHttpOnly(true); // JavaScript에서 쿠키 접근 불가, XSS 방지
+		accessTokenCookie.setSecure(false); // HTTPS에서만 전송 (개발 단계에서는 false로 설정 가능)
+		accessTokenCookie.setPath("/"); // 모든 경로에서 쿠키 사용 가능
+		accessTokenCookie.setMaxAge(3600); // 쿠키 유효 시간 설정 (1시간)
+
+		// 쿠키에 Refresh Token 설정
+		Cookie refreshTokenCookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
+		refreshTokenCookie.setHttpOnly(true);
+		refreshTokenCookie.setSecure(false);
+		refreshTokenCookie.setPath("/");
+		refreshTokenCookie.setMaxAge(86400); // 1일 유효
+
+		Cookie loginIdCookie = new Cookie("loginId", jwtToken.getLoginId());
+		loginIdCookie.setHttpOnly(true);
+		loginIdCookie.setSecure(false);
+		loginIdCookie.setPath("/");
+		loginIdCookie.setMaxAge(60 * 60 * 24);
+
+		// 응답에 쿠키 추가
+		response.addCookie(accessTokenCookie);
+		response.addCookie(refreshTokenCookie);
+		response.addCookie(loginIdCookie);
+
+		return ResponseEntity.ok(jwtToken);
 	}
+
+	/*
+		사용자 로그아웃
+	 */
+	@PostMapping("/logout")
+	public ResponseEntity<String> logout(HttpServletResponse response) {
+		// Access Token 쿠키 만료 설정
+		Cookie accessTokenCookie = new Cookie("accessToken", null);
+		accessTokenCookie.setHttpOnly(true);
+		accessTokenCookie.setSecure(false); // 개발 환경에서는 false로 설정 가능
+		accessTokenCookie.setPath("/");
+		accessTokenCookie.setMaxAge(0); // 쿠키 만료
+
+		// Refresh Token 쿠키 만료 설정
+		Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+		refreshTokenCookie.setHttpOnly(true);
+		refreshTokenCookie.setSecure(false);
+		refreshTokenCookie.setPath("/");
+		refreshTokenCookie.setMaxAge(0); // 쿠키 만료
+
+		// Refresh Token 쿠키 만료 설정
+		Cookie loginIdCookie = new Cookie("loginId", null);
+		loginIdCookie.setHttpOnly(true);
+		loginIdCookie.setSecure(false);
+		loginIdCookie.setPath("/");
+		loginIdCookie.setMaxAge(0); // 쿠키 만료
+
+		// 응답에 쿠키 추가 (쿠키 삭제)
+		response.addCookie(accessTokenCookie);
+		response.addCookie(refreshTokenCookie);
+		response.addCookie(loginIdCookie);
+
+		return ResponseEntity.ok("SUCCESS");
+	}
+
+	//	public JwtToken login (@RequestBody UserVO user){
+//		return authService.signIn(user.getLoginId(), user.getPassword());
+//	}
 
 	/*
 	 * 사용자 조회 TEST

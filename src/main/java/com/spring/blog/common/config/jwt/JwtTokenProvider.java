@@ -54,11 +54,14 @@ public class JwtTokenProvider {
 
         long now = (new Date()).getTime();
 
+        String loginId = authentication.getName();
+
         // Access Token 생성
         Date accessTokenExpiresIn = new Date(now + 3600000);
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
+                .claim("loginId", loginId)
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -70,14 +73,6 @@ public class JwtTokenProvider {
                 .setExpiration(new Date(now + 86400000))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-        
-        
-        //loginId 및 userName 세팅
-        String loginId = authentication.getName();
-//        PrincipalDetails userDetails = (PrincipalDetails) authentication.getPrincipal();
-//        String userName = ((PrincipalDetails)userDetails).getName();
-        logger.info(loginId);
-//        logger.info(userName);
 
         return JwtToken.builder()
                 .grantType("Bearer")
@@ -97,11 +92,14 @@ public class JwtTokenProvider {
         // 현재 시간
         long now = (new Date()).getTime();
 
+        String loginId = String.valueOf(authentication.getPrincipal().getAttributes().get("email"));
+
         // Access Token 생성 (1시간 유효)
         Date accessTokenExpiresIn = new Date(now + 3600000); // 1시간
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName()) // 사용자 이름 설정
                 .claim("auth", authorities) // 권한 정보 설정
+                .claim("loginId", loginId) // loginId 정보 추가
                 .setExpiration(accessTokenExpiresIn) // 만료 시간 설정
                 .signWith(key, SignatureAlgorithm.HS256) // 서명 알고리즘 및 비밀 키 사용
                 .compact();
@@ -110,6 +108,7 @@ public class JwtTokenProvider {
         String refreshToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
+                .claim("loginId", loginId) // loginId 정보 추가
                 .setExpiration(new Date(now + 86400000)) // 1일 만료
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -137,8 +136,11 @@ public class JwtTokenProvider {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
+        String loginId = claims.get("loginId", String.class);
+
         // UserDetails 객체를 만들어서 Authentication return
         // UserDetails: interface, User: UserDetails를 구현한 class
+//        PrincipalDetails principal = new PrincipalDetails(claims.getSubject(), "", authorities);
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
@@ -165,7 +167,7 @@ public class JwtTokenProvider {
 
 
     // accessToken
-    private Claims parseClaims(String token) {
+    public Claims parseClaims(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(key)

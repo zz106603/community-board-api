@@ -36,9 +36,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
 
-        logger.info(email);
-        logger.info(name);
-
         try {
             UserVO userOne = userMapper.findById(email);
 

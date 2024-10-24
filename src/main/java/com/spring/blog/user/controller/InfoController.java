@@ -1,12 +1,20 @@
 package com.spring.blog.user.controller;
 
+import com.spring.blog.common.config.jwt.JwtTokenProvider;
+import com.spring.blog.common.security.CustomOAuth2User;
 import com.spring.blog.common.security.PrincipalDetails;
 import com.spring.blog.user.service.AuthService;
 import com.spring.blog.user.vo.UserVO;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,10 +23,12 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Key;
 import java.util.Optional;
 
 @Tag(name = "Auth", description = "Auth 관련 API")
@@ -31,55 +41,35 @@ public class InfoController {
     @Autowired
     private AuthService authService;
 
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public InfoController(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+
     @GetMapping("/info")
-    public ResponseEntity<UserVO> getUserInfo() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null) {
-            logger.warn("Authentication object is null. User is not authenticated.");
-            return ResponseEntity.status(401).build();
+    public ResponseEntity<UserVO> getUserInfo(@CookieValue(value = "accessToken", required = false) String accessToken) {
+        if (accessToken == null) {
+            return ResponseEntity.status(401).build(); // 토큰이 없을 때 401 Unauthorized 반환
         }
 
-        if (!authentication.isAuthenticated()) {
-            logger.warn("User is not authenticated. Authentication: " + authentication);
-            return ResponseEntity.status(401).build();
-        }
+        try {
+            // JwtTokenProvider의 parseClaims 메서드를 사용하여 JWT 복호화
+            Claims claims = jwtTokenProvider.parseClaims(accessToken);
 
-        String loginId = null;
-        String email = null;
+            // 클레임에서 loginId 또는 기타 필요한 정보 추출
+            String loginId = claims.get("loginId", String.class); // loginId 필드 가져오기
 
-//        if (authentication instanceof UsernamePasswordAuthenticationToken) {
-//            Object principal = authentication.getPrincipal();
-//
-//            User user = (User) principal;
-//            loginId = user.getUsername();
-//        }
-        if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            Object principal = authentication.getPrincipal();
-
-            if (principal instanceof User) {
-                User user = (User) principal;
-                logger.info(user.toString());
-            } else {
-                logger.warn("Authentication principal is not an instance of User.");
+            // loginId를 이용해 DB에서 사용자 정보 조회
+            UserVO user = authService.getUserByLoginId(loginId);
+            if (user == null) {
+                return ResponseEntity.status(404).build(); // 사용자를 찾을 수 없을 때 404 Not Found 반환
             }
-        }
 
-        logger.info(loginId);
-        logger.info(email);
-
-        if (loginId == null) {
-            logger.warn("Unable to extract email from authentication object.");
-            return ResponseEntity.status(401).build();
-        }
-
-        // 서비스 계층을 통해 사용자 정보 조회
-        UserVO user = authService.getUserByLoginId(loginId);
-
-        if (user != null) {
             return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.status(404).build(); // 사용자 정보가 없을 경우
+        } catch (Exception e) {
+            // JWT 토큰이 유효하지 않은 경우 예외 처리
+            return ResponseEntity.status(401).body(null);
         }
     }
 
