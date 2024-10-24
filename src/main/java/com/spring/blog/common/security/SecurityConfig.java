@@ -66,6 +66,7 @@ public class SecurityConfig{
 			.authorizeHttpRequests((authorize) -> authorize
 			.requestMatchers(
 					"/api/auth/login",
+					"api/auth/logout",
 					"/api/auth/create",
 					"/api/auth/refresh",
 					"/login",
@@ -97,19 +98,19 @@ public class SecurityConfig{
 
 						// 쿠키 생성 및 설정
 						Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-						accessTokenCookie.setHttpOnly(false); // JavaScript로 접근 불가하게 설정
+						accessTokenCookie.setHttpOnly(true); // JavaScript로 접근 불가하게 설정
 						accessTokenCookie.setSecure(false); // HTTP에서도 쿠키 전송 가능하게 설정
 						accessTokenCookie.setPath("/"); // 쿠키의 경로 설정
 						accessTokenCookie.setMaxAge(60 * 60 * 24); // 쿠키 유효 기간 (하루)
 
 						Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-						refreshTokenCookie.setHttpOnly(false);
+						refreshTokenCookie.setHttpOnly(true);
 						refreshTokenCookie.setSecure(false);
 						refreshTokenCookie.setPath("/");
 						refreshTokenCookie.setMaxAge(60 * 60 * 24 * 7); // 쿠키 유효 기간 (일주일)
 
 						Cookie loginIdCookie = new Cookie("loginId", loginId);
-						loginIdCookie.setHttpOnly(false);
+						loginIdCookie.setHttpOnly(true);
 						loginIdCookie.setSecure(false);
 						loginIdCookie.setPath("/");
 						loginIdCookie.setMaxAge(60 * 60 * 24);
@@ -138,17 +139,6 @@ public class SecurityConfig{
 					.permitAll())
 			.sessionManagement(session -> session
 					.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-	//		.formLogin(formLogin -> formLogin
-	//				.disable()
-	//				.usernameParameter("loginId")
-	//				.passwordParameter("password")
-	//				.loginProcessingUrl("/login")
-	//				.successHandler(successHandler) // 커스텀 성공 핸들러 설정
-	//				.failureHandler(failureHandler) // 커스텀 실패 핸들러 설정
-	//				.permitAll()
-					//				.defaultSuccessUrl("/", false)
-	//				)
-
 			);
 		
 		return http.build();
