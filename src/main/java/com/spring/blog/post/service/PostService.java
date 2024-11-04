@@ -1,6 +1,7 @@
 package com.spring.blog.post.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.spring.blog.common.util.PagingResponse;
 import com.spring.blog.post.dto.SearchDTO;
@@ -13,6 +14,8 @@ public interface PostService{
 	PostVO getPostById(Long id, boolean incrementViewCount);
 
 	void createPost(PostVO post);
+
+	Map<String, Object> getCheckGrammar(String text);
 
 	void updatePost(PostVO post);
 
@@ -46,6 +49,7 @@ public interface PostService{
 	void createComment(CommentVO comment);
 	void deleteComment(Long commentId);
 	List<CommentVO> getCommentById(Long id);
+
 
 
 }
