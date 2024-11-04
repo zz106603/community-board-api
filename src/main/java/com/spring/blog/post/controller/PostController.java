@@ -15,8 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Post", description = "Post 관련 API")
 @RestController
@@ -101,6 +104,14 @@ public class PostController {
 	public String deletePost(@RequestParam("postId") Long postId){
 		postService.deletePost(postId);
 		return "DELETE POST COMPLETE";
+	}
+
+	@PostMapping("/check/grammar")
+	@Operation(summary = "문법 교정", description = "문법 교정을 수행합니다.")
+	@SecurityRequirement(name = "bearerAuth")
+	@SwaggerCommonResponse
+	public Map<String, Object> checkGrammar(@RequestBody Map<String, String> textMap) {
+		return postService.getCheckGrammar(textMap.get("text"));
 	}
 
 //	/*

@@ -2,13 +2,18 @@ package com.spring.blog.post.service;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +30,9 @@ import com.spring.blog.post.mapper.RecommendMapper;
 import com.spring.blog.post.vo.CommentVO;
 import com.spring.blog.post.vo.PostVO;
 import com.spring.blog.post.vo.RecommendVO;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class PostServiceImpl implements PostService{
@@ -182,6 +190,34 @@ public class PostServiceImpl implements PostService{
 			throw e;
 		}catch (Exception e) {
 			throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR,"Unexpected error occurred: " + e.getMessage());
+		}
+	}
+
+	private static final String GRAMMAR_API_URL = "https://api.languagetool.org/v2/check";
+	private final RestTemplate restTemplate = new RestTemplate();
+	/*
+		문법 검사
+	 */
+	@Override
+	public Map<String, Object> getCheckGrammar(String text) {
+		// 외부 API 호출에 필요한 파라미터 설정
+		MultiValueMap<String, String> apiParams = new LinkedMultiValueMap<>();
+		apiParams.add("text", text);
+		apiParams.add("language", "en-US");
+
+		// 외부 API 호출 및 응답 받기
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+			HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(apiParams, headers);
+			Map<String, Object> response = restTemplate.postForObject(GRAMMAR_API_URL, requestEntity, Map.class);
+			// matches 항목을 사용해 문법 교정 제안 반환
+			Map<String, Object> result = new HashMap<>();
+			result.put("matches", response != null ? response.get("matches") : null);
+			return result;
+		} catch (Exception e) {
+			logger.info(e.getMessage());
+			return new HashMap<>();
 		}
 	}
 
