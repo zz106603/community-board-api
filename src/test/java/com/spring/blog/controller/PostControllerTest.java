@@ -1,6 +1,7 @@
-package com.spring.blog;
+package com.spring.blog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spring.blog.common.TestSecurityConfig;
 import com.spring.blog.post.mapper.PostMapper;
 import com.spring.blog.post.vo.PostVO;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -12,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -23,6 +26,7 @@ import java.time.LocalDateTime;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Import(TestSecurityConfig.class) // 테스트 환경에서 보안 설정 비활성화
 public class PostControllerTest {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -31,6 +35,7 @@ public class PostControllerTest {
     static void setUp() {
         Dotenv dotenv = Dotenv.configure().load();
 
+        // 환경 변수를 안전하게 설정
         System.setProperty("spring.datasource.username", dotenv.get("DB_USERNAME"));
         System.setProperty("spring.datasource.password", dotenv.get("DB_PASSWORD"));
         System.setProperty("spring.datasource.url", dotenv.get("DB_URL"));

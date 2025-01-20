@@ -2,39 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.5'
 	id 'io.spring.dependency-management' version '1.1.4'
-	id 'com.google.cloud.tools.jib' version '3.2.1'
-}
-
-jib {
-    from {
-        image = 'openjdk:17.0.2-slim'
-    }
-    to {
-        image = 'docker.io/yunhwan95/board'
-        tags = ['1.0.6']
-    }
-    container {
-    	entrypoint = ['java', '-Dspring.profiles.active=prod', '-jar', 'blog-0.0.1-SNAPSHOT.jar']
-        ports = ['8080']
-        environment = [SPRING_OUTPUT_ANSI_ENABLED: "ALWAYS"]
-        labels = [Iversion: project.version, name: project.name, group: project.group]
-        format = 'Docker'
-        //jvmFlags = [
-        //			'-Dspring.profiles.active=prod',
-        //			'-Dfile.encoding=UTF-8',
-        //]
-        //environment = [
-        //    'SPRING_PROFILES_ACTIVE': 'prod'
-        //]
-        //jvmFlags = ["-Xms128m", "-Xmx128m"]
-    }
-    extraDirectories {
-        paths { 
-            path {
-                from = file('build/libs') 
-            }
-        }
-    }
 }
 
 group = 'com.spring'
@@ -52,6 +19,12 @@ configurations {
 
 repositories {
 	mavenCentral()
+}
+
+dependencyManagement {
+	imports {
+		mavenBom 'org.springframework.boot:spring-boot-dependencies:3.2.5'
+	}
 }
 
 dependencies {

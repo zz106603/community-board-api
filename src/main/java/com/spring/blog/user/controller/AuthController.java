@@ -29,6 +29,7 @@ import com.spring.blog.user.service.AuthService;
 import com.spring.blog.user.vo.UserVO;
 
 @Tag(name = "Auth", description = "Auth 관련 API")
+@SwaggerCommonResponse //Swagger 공통 응답 어노테이션
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -50,7 +51,6 @@ public class AuthController {
 	 */
 	@PostMapping("/create")
 	@Operation(summary = "사용자 회원가입", description = "사용자를 회원가입합니다.")
-	@SwaggerCommonResponse //Swagger 공통 응답 어노테이션
 	public String createUser(@RequestBody UserVO user){
 		authService.createUser(user);
 		return "SIGNUP USER COMPLETE";	
@@ -61,7 +61,6 @@ public class AuthController {
 	 */
 	@PostMapping("/refresh")
 	@Operation(summary = "AccessToken 재발급", description = "AccessToken을 재발급합니다.")
-	@SwaggerCommonResponse
 	public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
 		// 모든 쿠키 가져오기
 		Cookie[] cookies = request.getCookies();
@@ -102,7 +101,6 @@ public class AuthController {
 	 */
 	@PostMapping("/login")
 	@Operation(summary = "사용자 로그인", description = "사용자를 로그인합니다.")
-	@SwaggerCommonResponse
 	public ResponseEntity<JwtToken> login (@RequestBody UserVO user, HttpServletResponse response){
 
 		JwtToken jwtToken = authService.signIn(user.getLoginId(), user.getPassword());
@@ -139,6 +137,7 @@ public class AuthController {
 		사용자 로그아웃
 	 */
 	@PostMapping("/logout")
+	@Operation(summary = "사용자 로그아웃", description = "사용자를 로그아웃합니다.")
 	public ResponseEntity<String> logout(HttpServletResponse response) {
 		// Access Token 쿠키 만료 설정
 		Cookie accessTokenCookie = new Cookie("accessToken", null);
