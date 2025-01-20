@@ -44,4 +44,3 @@ logs/
 src/main/resources/application-oauth.properties
 
 .env
-.env.local
