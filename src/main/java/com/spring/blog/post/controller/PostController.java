@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 @Tag(name = "Post", description = "Post 관련 API")
+@SwaggerCommonResponse //Swagger 공통 응답 어노테이션
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
@@ -37,8 +39,6 @@ public class PostController {
 	 */
 	@GetMapping("/{postId}")
 	@Operation(summary = "게시글 ID 조회", description = "게시글 ID를 조회합니다.")
-	@SecurityRequirement(name = "bearerAuth")
-	@SwaggerCommonResponse //Swagger 공통 응답 어노테이션
 	public PostVO selectPost(@PathVariable("postId") Long postId, @RequestParam(value="incrementViewCount", defaultValue="true") boolean incrementViewCount){
 		logger.info(String.valueOf(incrementViewCount));
 		return postService.getPostById(postId, incrementViewCount);
@@ -49,8 +49,6 @@ public class PostController {
 	 */
 	@GetMapping("/all")
 	@Operation(summary = "전체 조회", description = "게시글 전체를 조회합니다.")
-	@SecurityRequirement(name = "bearerAuth")
-	@SwaggerCommonResponse
 	public PagingResponse<PostVO> selectPost(SearchDTO params){
 		return postService.getPostByAll(params);
 	}
@@ -60,8 +58,6 @@ public class PostController {
 	 */
 	@GetMapping("/all/count")
 	@Operation(summary = "전체 조회 카운트", description = "게시글 전체 카운트를 조회합니다.")
-	@SecurityRequirement(name = "bearerAuth")
-	@SwaggerCommonResponse
 	public Long selectPostCount(SearchDTO params){
 		return postService.getPostByAllCount(params);
 	}
@@ -72,8 +68,6 @@ public class PostController {
 	 */
 	@PostMapping("/create")
 	@Operation(summary = "게시글 등록", description = "게시글을 등록합니다.")
-	@SecurityRequirement(name = "bearerAuth")
-	@SwaggerCommonResponse
 	public String createPost(@RequestBody PostVO post){
 		postService.createPost(post);
 		//201응답으로 바꾸는거 필요 -> 프론트도 수정해야 함
@@ -86,8 +80,6 @@ public class PostController {
 	 */
 	@PutMapping("/update")
 	@Operation(summary = "게시글 수정", description = "게시글을 수정합니다.")
-	@SecurityRequirement(name = "bearerAuth")
-	@SwaggerCommonResponse
 	public String updatePost(@RequestBody PostVO post){
 		postService.updatePost(post);
 		return "UPDATE POST COMPLETE";
@@ -99,8 +91,6 @@ public class PostController {
 	 */
 	@DeleteMapping("/delete")
 	@Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
-	@SecurityRequirement(name = "bearerAuth")
-	@SwaggerCommonResponse
 	public String deletePost(@RequestParam("postId") Long postId){
 		postService.deletePost(postId);
 		return "DELETE POST COMPLETE";
@@ -108,8 +98,6 @@ public class PostController {
 
 	@PostMapping("/check/grammar")
 	@Operation(summary = "문법 교정", description = "문법 교정을 수행합니다.")
-	@SecurityRequirement(name = "bearerAuth")
-	@SwaggerCommonResponse
 	public Map<String, Object> checkGrammar(@RequestBody Map<String, String> textMap) {
 		return postService.getCheckGrammar(textMap.get("text"));
 	}
@@ -145,8 +133,6 @@ public class PostController {
 	 */
 	@PostMapping("/recom")
 	@Operation(summary = "게시글 추천", description = "게시글을 추천/비추천합니다.")
-	@SecurityRequirement(name = "bearerAuth")
-	@SwaggerCommonResponse
 	public String recomCountPost(@RequestBody RecommendVO recommend){
 		postService.processRecommendation(recommend);
 		return "RECOM POST COMPLETE";
@@ -179,8 +165,6 @@ public class PostController {
 	 */
 	@GetMapping("/recom/check")
 	@Operation(summary = "게시글 추천 검사", description = "게시글 추천 여부를 검사합니다.")
-	@SecurityRequirement(name = "bearerAuth")
-	@SwaggerCommonResponse
 	public RecommendVO checkPostRecom(@RequestParam("userId") String userId, @RequestParam("postId") Long postId){
 		return postService.getPostRecomByUserIdAndPostId(userId, postId);
 	}
@@ -190,8 +174,6 @@ public class PostController {
 	 */
 	@PostMapping("/comment/create")
 	@Operation(summary = "게시글 댓글 등록", description = "게시글 댓글을 등록합니다.")
-	@SecurityRequirement(name = "bearerAuth")
-	@SwaggerCommonResponse
 	public String createComment(@RequestBody CommentVO comment){
 		postService.createComment(comment);
 		return "SAVE COMMENT COMPLETE";
@@ -202,8 +184,6 @@ public class PostController {
 	 */
 	@GetMapping("/comment/{postId}")
 	@Operation(summary = "게시글 댓글 조회", description = "게시글 댓글을 조회합니다.")
-	@SecurityRequirement(name = "bearerAuth")
-	@SwaggerCommonResponse
 	public List<CommentVO> selectComment(@PathVariable("postId") Long postId){
 		return postService.getCommentById(postId);
 	}
@@ -213,8 +193,6 @@ public class PostController {
 	 */
 	@DeleteMapping("/comment/delete")
 	@Operation(summary = "게시글 댓글 삭제", description = "게시글 댓글을 삭제합니다.")
-	@SecurityRequirement(name = "bearerAuth")
-	@SwaggerCommonResponse
 	public String deleteComment(@RequestParam("commentId") Long commentId){
 		postService.deleteComment(commentId);
 		return "DELETE COMMENT COMPLETE";
