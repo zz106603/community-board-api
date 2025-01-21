@@ -1,7 +1,23 @@
 services:
-  app:
-    image: community-api:latest
+  postgres:
+    image: postgres:16
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_DB: blog
+      POSTGRES_USER: "manager"
+      POSTGRES_PASSWORD: "manager0"
     ports:
-      - "8080:8080"
-    env_file:
-      - .env
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - postgres_network
+
+volumes:
+  postgres_data:
+
+networks:
+  postgres_network:
+    name: community-board-api_postgres_network
+    driver: bridge
