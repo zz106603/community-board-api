@@ -2,6 +2,18 @@ spring:
   application:
     name: blog
 
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: 'false'
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    defer-datasource-initialization: true
+
   datasource:
     url: ${spring.datasource.url}
     username: ${spring.datasource.username}
