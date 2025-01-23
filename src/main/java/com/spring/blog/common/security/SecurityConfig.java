@@ -5,6 +5,7 @@ import com.spring.blog.common.config.jwt.JwtToken;
 import com.spring.blog.common.config.jwt.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +31,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-
+@Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig{
-
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private CustomOAuth2UserService customOAuth2UserService;
@@ -43,15 +42,15 @@ public class SecurityConfig{
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
 
-	/**
-	 * 이 메서드는 정적 자원에 대해 보안을 적용하지 않도록 설정한다.
-	 * 정적 자원은 보통 HTML, CSS, JavaScript, 이미지 파일 등을 의미하며, 이들에 대해 보안을 적용하지 않음으로써 성능을 향상시킬 수 있다.
-	 */
-	@Bean
-	public WebSecurityCustomizer webSecurityCustomizer() {
-		return web -> web.ignoring()
-				.requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-	}
+//	/**
+//	 * 이 메서드는 정적 자원에 대해 보안을 적용하지 않도록 설정한다.
+//	 * 정적 자원은 보통 HTML, CSS, JavaScript, 이미지 파일 등을 의미하며, 이들에 대해 보안을 적용하지 않음으로써 성능을 향상시킬 수 있다.
+//	 */
+//	@Bean
+//	public WebSecurityCustomizer webSecurityCustomizer() {
+//		return web -> web.ignoring()
+//				.requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+//	}
 
 
 	// 특정 HTTP 요청에 대한 웹 기반 보안 구성
@@ -65,6 +64,8 @@ public class SecurityConfig{
 //			.cors(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests((authorize) -> authorize
 			.requestMatchers(
+					"/static/**",
+					"/public/**",
 					"/api/auth/login",
 					"api/auth/logout",
 					"/api/auth/create",
