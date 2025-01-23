@@ -1,0 +1,26 @@
+apiVersion: apps/v1  # 쿠버네티스 앱 배포 API 버전
+kind: Deployment     # 리소스 종류 (Deployment)
+metadata:
+  name: mydb  # 데이터베이스 배포의 이름
+spec:
+  replicas: 1  # 단일 인스턴스 실행 (DB는 보통 여러 개 실행하지 않음)
+  selector:
+    matchLabels:
+      app: mydb  # 라벨로 해당 DB Pod 관리
+  template:
+    metadata:
+      labels:
+        app: mydb
+    spec:
+      containers:
+        - name: mydb  # 컨테이너 이름
+          image: postgres:16  # PostgreSQL 16 이미지 사용
+          env:
+            - name: POSTGRES_DB
+              value: "blog"
+            - name: POSTGRES_USER
+              value: "manager"
+            - name: POSTGRES_PASSWORD
+              value: "manager0"
+          ports:
+            - containerPort: 5432  # PostgreSQL의 기본 포트
