@@ -57,6 +57,11 @@
 ### 2024-11-04
 - 생성형 AI 기능 추가(게시글 등록, 수정 시 문법 검사)
 
+### 2025-01-23
+- Spring Boot 버전 up(3.2), build.gradle 리팩토링
+- MyBatis -> JPA로 변환을 위한 준비(Entity 클래스 추가)
+- Docker, Kubernetes 실습을 위한 yaml 파일(minikube 사용, deployment, db-deployment, service, db-service.yaml 사용)
+
 ---
 
 ![스크린샷 2024-10-02 164536](https://github.com/user-attachments/assets/87a90686-aa52-492e-baa9-31e6f4277d9b)
